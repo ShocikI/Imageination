@@ -11,11 +11,11 @@ class FrameSelectFile(Frame):
     file_list = None
     remove_button = None
 
-    def __init__(self, root, props):
-        Frame.__init__(self, root)
-        self.create(root, props)
+    def __init__(self, parent, props):
+        Frame.__init__(self, parent)
+        self.create(props)
 
-    def create(self, root, props):
+    def create(self, props):
         self['padding'] = (10, 5)
 
         self.select_frame = Labelframe(self, text="Select files")
@@ -30,7 +30,7 @@ class FrameSelectFile(Frame):
 
         self.remove_frame = Labelframe(self, text="Remove one image")
         self.remove_button = Button(
-            self.remove_frame, text="Remove button", 
+            self.remove_frame, text="Remove selected", 
             command=lambda: ops.remove_file(self.file_list, props)
         )
         self.file_list = Combobox(self.remove_frame, values=props['file_names'], justify='right', xscrollcommand=True)

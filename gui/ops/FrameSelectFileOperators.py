@@ -3,7 +3,6 @@ import os
 
 def select_files(combo, props):
     file = filedialog.askopenfilenames()
-    print(file)
     if file == "":
         return
     
