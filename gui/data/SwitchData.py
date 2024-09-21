@@ -44,7 +44,7 @@ class SwitchData(Labelframe):
 
         self.b_remove = Button(
             self, text="Remove selected color",
-            command=lambda: ops.remove_selected_color()
+            command=lambda: ops.remove_selected_color(self)
         )
         self.b_remove['padding'] = (10, 5)
 
