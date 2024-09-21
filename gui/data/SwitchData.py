@@ -15,7 +15,7 @@ class SwitchData(Labelframe):
     b_remove: Button
     b_remove_frame: Button
 
-    def __init__(self, parent, rgb, hex=None):
+    def __init__(self, parent, props, rgb, hex=None):
         self.rgb_color = rgb
         if hex:
             self.hex_color = hex
@@ -24,9 +24,9 @@ class SwitchData(Labelframe):
     
         self.color_list = []
         Labelframe.__init__(self, parent, text=self.hex_color)
-        self.create()
+        self.create(props)
 
-    def create(self):
+    def create(self, props):
         # Layout
         self.box_color = Listbox(self, height=1)
         self.box_color.insert(1, self.hex_color)
@@ -50,7 +50,7 @@ class SwitchData(Labelframe):
 
         self.b_remove_frame = Button(
             self, text="Remove this frame",
-            command=lambda: ops.remove_frame(self)
+            command=lambda: ops.remove_frame(self, props)
         )
 
 

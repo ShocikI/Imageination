@@ -63,8 +63,6 @@ class FrameSwitchColor(Frame):
 
 
     def show_scrollbar_when_needed(self):
-        """Pokazuje scrollbar tylko wtedy, gdy jest potrzebny"""
-        # Sprawdzamy, czy zawartość przekracza rozmiar canvasu
         if self.canvas.bbox("all")[3] > self.canvas.winfo_height():
             self.scrollbar.pack(side=tk.RIGHT, fill="y")
         else:
@@ -153,5 +151,5 @@ class FrameSwitchColor(Frame):
         self.zoom_window.destroy()
         self.pop_up.destroy()
 
-        props['switch_data'].append(sd.SwitchData(self.scr_frame, rgb_pixel))
+        props['switch_data'].append(sd.SwitchData(self.scr_frame, props, rgb_pixel))
         self.update_grid(props)

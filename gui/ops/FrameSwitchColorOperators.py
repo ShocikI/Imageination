@@ -10,8 +10,9 @@ def remove_selected_color(data):
     for index in indices:
         data.box_switches.delete(index)
 
-def remove_frame(frame):
-    print("Remove frame")
+def remove_frame(frame, props):
+    frame.grid_remove()
+    props['switch_data'].remove(frame)
 
 def generate_images(props):
     print("generate images")
