@@ -1,6 +1,6 @@
 from tkinter.ttk import Notebook, Frame, Label
-from gui.components.frames import FrameSelectFile as fsf
-from gui.components.frames import FrameSwitchColor as fsc
+from source.components.frames import FrameSelectFile as fsf
+from source.components.frames import FrameSwitchColor as fsc
 
 class Modes(Notebook):
     def __init__(self, root, props):

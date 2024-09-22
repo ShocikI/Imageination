@@ -1,8 +1,8 @@
 from tkinter.ttk import Button, Frame, Labelframe, Scrollbar
 from tkinter import Listbox
 
-from gui.ops import FrameSwitchColorOperators as ops
-from gui.ops import sys_operators as sops
+from source.ops import FrameSwitchColorOperators as ops
+from source.ops import sys_operators as sops
 
 
 class SwitchData(Labelframe):

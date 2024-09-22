@@ -2,8 +2,8 @@ from tkinter.ttk import Frame, Button, Labelframe, Scrollbar
 from tkinter import Listbox, Toplevel, Canvas, messagebox, PhotoImage
 from PIL import Image, ImageTk
 
-from gui.ops import FrameSwitchColorOperators as ops
-from gui.data import SwitchData as sd
+from source.ops import FrameSwitchColorOperators as ops
+from source.data import SwitchData as sd
 
 
 class FrameSwitchColor(Frame):
@@ -45,7 +45,7 @@ class FrameSwitchColor(Frame):
 
         self.b_generate = Button(
             self.scr_frame, text="Generate images",
-            command=lambda: ops.generate_images(props)
+            command=lambda: (ops.generate_images(props), self.update_grid(props))
         )
         self.b_generate['padding'] = (15, 5)
 
@@ -75,6 +75,7 @@ class FrameSwitchColor(Frame):
         self.b_pop_up.grid(column=2, row=1, sticky='we')
         row = 2
         # Sprawdź, czy są dane w switch_data
+        print([name for name in props['file_names']])
         if len(props['switch_data']) > 0:
             for item in props['switch_data']:
                 item.grid_up(1, row)
@@ -148,8 +149,16 @@ class FrameSwitchColor(Frame):
     def get_pixel_color(self, event, data, multiplier, props):
         x, y = int(event.x / multiplier), int(event.y / multiplier)
         rgb_pixel = data.getpixel((x, y))
+
+        is_new = True
+        if len(props['switch_data']):
+            for data in props['switch_data']:
+                if list(data.rgb_color) == list(data.rgb_color):
+                    is_new = False
+
         self.zoom_window.destroy()
         self.pop_up.destroy()
 
-        props['switch_data'].append(sd.SwitchData(self.scr_frame, props, rgb_pixel))
-        self.update_grid(props)
+        if is_new:
+            props['switch_data'].append(sd.SwitchData(self.scr_frame, props, rgb_pixel))
+            self.update_grid(props)

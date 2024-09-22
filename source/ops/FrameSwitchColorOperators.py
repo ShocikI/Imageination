@@ -52,10 +52,10 @@ def generate_images(props) -> None:
         generate_file(matrix, look_up_table, combo, index)
 
     # Reset program
-    props = {
-        "file_names": [],
-        "switch_data": []
-    }
+    for frame in props['switch_data']:
+        remove_frame(frame, props)
+
+    props['file_names'] = []
 
     print("Finished!")
 

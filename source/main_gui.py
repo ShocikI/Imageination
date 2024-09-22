@@ -1,10 +1,10 @@
 from tkinter import Tk
 
-from gui.components import MenuBar as mb
-from gui.components import Modes
-from gui.components.frames import FrameSelectFile as fsf
+from source.components import MenuBar as mb
+from source.components import Modes
+from source.components.frames import FrameSelectFile as fsf
 
-from gui.data import SwitchData as sd
+from source.data import SwitchData as sd
 
 class GUI:
     props = {

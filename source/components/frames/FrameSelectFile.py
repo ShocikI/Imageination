@@ -1,6 +1,6 @@
 from tkinter import filedialog
 from tkinter.ttk import Button, Label, Frame, Labelframe, Combobox, Separator
-from gui.ops import FrameSelectFileOperators as ops
+import os
 
 class FrameSelectFile(Frame):
     select_frame = None
@@ -21,22 +21,22 @@ class FrameSelectFile(Frame):
         self.select_frame = Labelframe(self, text="Select files")
         self.get_img_button = Button(
             self.select_frame, text="Select images", 
-            command=lambda: ops.select_files(self.file_list, props)
+            command=lambda: self.select_files(props)
         )
         self.folder_img_button = Button(
             self.select_frame, text="Select folder", 
-            command=lambda: ops.select_folder(self.file_list, props)
+            command=lambda: self.select_folder(props)
         )
 
         self.remove_frame = Labelframe(self, text="Remove one image")
         self.remove_button = Button(
             self.remove_frame, text="Remove selected", 
-            command=lambda: ops.remove_file(self.file_list, props)
+            command=lambda: self.remove_file(props)
         )
         self.file_list = Combobox(self.remove_frame, values=props['file_names'], justify='right', xscrollcommand=True)
         self.reset_button = Button(
             self.remove_frame, text="Clear selection", 
-            command=lambda: ops.clear_selection(self.file_list, props)
+            command=lambda: self.clear_selection(props)
         )
 
         # Grid
@@ -54,3 +54,45 @@ class FrameSelectFile(Frame):
         self.remove_button['padding'] = (10,5)
         self.reset_button.grid(column=7, row=4, columnspan=4, padx=(5, 0), pady=(5), sticky=("W", "E"))
         self.reset_button['padding'] = (10,5)
+
+    def select_files(self, props) -> None:
+        file = filedialog.askopenfilenames()
+        if file == "":
+            return
+        
+        file_list = list(file)
+        for f in file_list:
+            if f.endswith(".png") or f.endswith(".jpg") or f.endswith(".jpeg"):
+                props['file_names'].append(f)
+
+        if len(props['file_names']) > 0:
+            self.file_list['values'] = props['file_names']
+            self.file_list.set("")
+
+    def select_folder(self, props) -> None:
+        folder_name = filedialog.askdirectory().replace("/", "\\")
+        if folder_name == "":
+            return
+
+        os.chdir(folder_name)
+        for f in list(os.listdir()):
+            if f.endswith(".png") or f.endswith(".jpg") or f.endswith(".jpeg"):
+                props['file_names'].append(os.path.join(folder_name, f))
+    
+        if len(props['file_names']) > 0:
+            self.file_list['values'] = props['file_names']
+            self.file_list.set("")
+
+    def remove_file(self, props) -> None:
+        name = self.file_list.get()
+        if name != '':
+            index = props['file_names'].index(name)
+            props['file_names'].pop(index)
+            self.file_list['values'] = props['file_names']
+            self.file_list.set("")
+
+    def clear_selection(self, props) -> None:
+        props['file_names'] = []
+        self.file_list['values'] = props['file_names']
+        self.file_list.set("")
+        print("List has been cleared.")
