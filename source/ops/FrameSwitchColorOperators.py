@@ -6,12 +6,14 @@ import os
 
 def select_target_color(item) -> None:
     color = colorchooser.askcolor(initialcolor='#ff0808')
-    item.color_list.append(color[0])
-    item.box_switches.insert(len(item.color_list)+1, color[1])
+    if color[0] not in item.color_list:    
+        item.color_list.append(color[0])
+        item.box_switches.insert(len(item.color_list)+1, color[1])
 
 def remove_selected_color(data) -> None:
     index = data.box_switches.curselection()
-    data.box_switches.delete(index)
+    if index:
+        data.box_switches.delete(index)
 
 def remove_frame(frame, props) -> None:
     frame.grid_remove()
@@ -45,7 +47,7 @@ def generate_images(props) -> None:
         combos = product(*colors)
     else:
         item = props['switch_data'][0]
-        combos = ([(color, item.hex_color) for color in item.color_list], )
+        combos = ([(color, item.hex_color)] for color in item.color_list)
     
     # Generate every combo
     for index, combo in enumerate(combos):

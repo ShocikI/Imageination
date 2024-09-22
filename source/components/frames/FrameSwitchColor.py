@@ -54,9 +54,21 @@ class FrameSwitchColor(Frame):
         self.scrollbar.pack(fill="both", expand=True)
 
         self.b_pop_up.grid(column=2, row=1, sticky='we')
-
+        # Bind mouse wheel scrolling to the canvas
+        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        self.canvas.bind_all("<Button-4>", self._on_mouse_wheel)  # For macOS scroll up
+        self.canvas.bind_all("<Button-5>", self._on_mouse_wheel)  # For macOS scroll down
         self.scr_frame.bind("<Configure>", self.on_frame_configure)
-    
+
+    def _on_mouse_wheel(self, event):
+        """Handle mouse wheel scrolling"""
+        if event.num == 4:  # macOS scroll up
+            self.canvas.yview_scroll(-1, "units")
+        elif event.num == 5:  # macOS scroll down
+            self.canvas.yview_scroll(1, "units")
+        else:
+            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")  # Windows/Linux scroll
+
     def on_frame_configure(self, event=None):
         """Funkcja wywoływana przy każdej zmianie rozmiaru frame"""
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
@@ -75,7 +87,6 @@ class FrameSwitchColor(Frame):
         self.b_pop_up.grid(column=2, row=1, sticky='we')
         row = 2
         # Sprawdź, czy są dane w switch_data
-        print([name for name in props['file_names']])
         if len(props['switch_data']) > 0:
             for item in props['switch_data']:
                 item.grid_up(1, row)
@@ -153,12 +164,13 @@ class FrameSwitchColor(Frame):
         is_new = True
         if len(props['switch_data']):
             for data in props['switch_data']:
-                if list(data.rgb_color) == list(data.rgb_color):
+                if list(data.rgb_color) == list(rgb_pixel):
                     is_new = False
 
         self.zoom_window.destroy()
         self.pop_up.destroy()
 
         if is_new:
+            print(f"Add new color {rgb_pixel}")
             props['switch_data'].append(sd.SwitchData(self.scr_frame, props, rgb_pixel))
             self.update_grid(props)

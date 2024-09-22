@@ -33,8 +33,6 @@ class SwitchData(Labelframe):
         self.box_color['state'] = "disable"
 
         self.box_switches = Listbox(self, height=5)
-        scroolbar = Scrollbar(self.box_switches, orient="vertical", command=Listbox.yview)
-        self.box_switches.configure(yscrollcommand=scroolbar.set)
 
         self.b_add = Button(
             self, text="Select target color",
