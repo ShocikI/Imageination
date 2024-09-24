@@ -1,5 +1,5 @@
-from tkinter.ttk import Button, Frame, Labelframe
-from tkinter import Listbox
+from tkinter.ttk import Button, Frame, Label, Labelframe, Combobox, Spinbox
+from tkinter import BooleanVar, Listbox, Checkbutton, IntVar
 
 import source.ops.FrameSwitchColorOperators as ops
 import source.ops.sys_operators as sops
@@ -16,6 +16,9 @@ class SwitchData(Labelframe):
         color_list (list[str]): A list of target colors to switch to.
         box_color (Listbox | None): A Listbox displaying the current color in hex format.
         box_switches (Listbox | None): A Listbox displaying the selected target colors.
+        check_tolerance (Checkbox | None): A Checkbox to choose a usage of tolerance.
+        tolerance_type (dict): A 
+        tolerance (int): A 
         b_add (Button | None): A button to open a color chooser for selecting target colors.
         b_remove (Button | None): A button to remove the selected color from the list.
         b_remove_frame (Button | None): A button to remove the entire color switch frame.
@@ -25,6 +28,8 @@ class SwitchData(Labelframe):
     color_list: list[str]
     box_color: Listbox | None = None
     box_switches: Listbox | None = None
+    tolerance_type = {"Cubic", "Sphere"}
+    tolerance_value: int
     b_add: Button | None = None
     b_remove: Button | None = None
     b_remove_frame: Button | None = None
@@ -45,7 +50,7 @@ class SwitchData(Labelframe):
             self.hex_color = hex
         else:
             self.hex_color = sops.RGB_to_hex(self.rgb_color)
-    
+        self.tolerance = 0
         self.color_list = []
         Labelframe.__init__(self, parent, text=self.hex_color)
         self.create(data)
@@ -64,22 +69,21 @@ class SwitchData(Labelframe):
 
         self.box_switches = Listbox(self, height=5)
 
-        self.b_add = Button(
-            self, text="Select target color",
-            command=lambda: ops.select_target_color(self)
-        )
+        self.use_tolerance = BooleanVar(self, value=False, name="Use tolerance")
+        self.tolerance_value = IntVar()
+        self.check_tolerance = Checkbutton(self, text="Use tolerance", variable=self.use_tolerance, onvalue=True, offvalue=False, command=self.toggle_tolerance_option, width=20)
+        self.label_box = Label(self, text="Tolerance type: ")
+        self.box_tolerance = Combobox(self, values=["Cubic", "Spherical"], justify='left', width=9)
+        self.label_spin = Label(self, text="Tolerance value: ")
+        self.spin_tolerance = Spinbox(self, from_=0, to=128, textvariable=self.tolerance_value, width=4)
+
+        self.b_add = Button(self, text="Select target color", command=lambda: ops.select_target_color(self) )
         self.b_add['padding'] = (10, 5)
 
-        self.b_remove = Button(
-            self, text="Remove selected color",
-            command=lambda: ops.remove_selected_color(self)
-        )
+        self.b_remove = Button(self, text="Remove selected color", command=lambda: ops.remove_selected_color(self) )
         self.b_remove['padding'] = (10, 5)
 
-        self.b_remove_frame = Button(
-            self, text="Remove this frame",
-            command=lambda: ops.remove_frame(self, data)
-        )
+        self.b_remove_frame = Button(self, text="Remove this frame", command=lambda: ops.remove_frame(self, data) )
 
 
     def grid_up(self, column, row):
@@ -90,10 +94,25 @@ class SwitchData(Labelframe):
             column (int): The column position in the grid layout.
             row (int): The row position in the grid layout.
         """
+        self.columnconfigure([1,3], weight=1)
         self.grid(column=column, row=row, columnspan=3)
-        self.box_color.grid(column=1, row=1, columnspan=3, pady=5, sticky='nwe')
-        self.box_switches.grid(column=1, row=2, columnspan=3, rowspan=2)
+        self.box_color.grid(column=1, row=1, columnspan=3, pady=5, sticky="we", padx=10)
+        self.box_switches.grid(column=1, row=2, columnspan=3, rowspan=2, sticky="we", padx=10)
 
-        self.b_add.grid(column=4, row=1, columnspan=3, padx=5, pady=5, sticky='nswe')
-        self.b_remove.grid(column=4, row=2, columnspan=3, padx=5, pady=5, sticky='nswe')
-        self.b_remove_frame.grid(column=4, row=3, columnspan=3, padx=5, pady=5, ipady=5, sticky='we')
+        self.check_tolerance.grid(column=1, row=4, columnspan=3, sticky='w')
+
+        self.b_add.grid(column=5, row=1, columnspan=3, padx=5, pady=5, sticky='nswe')
+        self.b_remove.grid(column=5, row=2, columnspan=3, padx=5, pady=5, sticky='nswe')
+        self.b_remove_frame.grid(column=5, row=3, columnspan=3, padx=5, pady=5, ipady=5, sticky='we')
+
+    def toggle_tolerance_option(self):
+        if self.use_tolerance.get():
+            self.label_box.grid(column=1, row=5, padx=5, columnspan=2, sticky="w")
+            self.box_tolerance.grid(column=3, row=5, padx=(0,10), pady=5, sticky="w")
+            self.label_spin.grid(column=1, row=6, padx=5, columnspan=2, sticky="w")
+            self.spin_tolerance.grid(column=3, row=6, sticky="w")
+        else:
+            self.label_box.grid_forget()
+            self.box_tolerance.grid_forget()
+            self.label_spin.grid_forget()
+            self.spin_tolerance.grid_forget()
