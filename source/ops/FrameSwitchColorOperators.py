@@ -5,7 +5,6 @@ from itertools import product
 import os
 
 
-
 def select_target_color(item) -> None:
     """
     Opens a color chooser dialog to select a color and adds the selected color
@@ -83,8 +82,8 @@ def generate_images(data) -> None:
         generate_file(matrix, look_up_table, combo, index)
 
     # Reset program
-    for frame in props.switch_data:
-        remove_frame(frame, props)
+    for frame in data.switch_data:
+        remove_frame(frame, data)
 
     data.file_names = []
 

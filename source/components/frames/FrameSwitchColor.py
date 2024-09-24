@@ -1,5 +1,5 @@
-from tkinter.ttk import Frame, Button, Labelframe, Scrollbar, Notebook
-from tkinter import Listbox, Toplevel, Canvas, messagebox, PhotoImage, Event
+from tkinter.ttk import Frame, Button, Scrollbar, Notebook
+from tkinter import Toplevel, Canvas, messagebox, Event
 from PIL import Image, ImageTk
 
 from source.ops import FrameSwitchColorOperators as ops
@@ -53,8 +53,8 @@ class FrameSwitchColor(Frame):
         self.b_pop_up = Button(self.scr_frame, text="Select color to switch", command=lambda: self.draw_pop_up(data))
         self.b_pop_up['padding'] = (15, 5)
 
-        for _ in data.switch_data:
-            self.create_switch_frame(color_hex)
+        for item in data.switch_data:
+            self.create_switch_frame(item.color_hex)
 
         self.b_generate = Button(
             self.scr_frame, text="Generate images",
@@ -101,7 +101,7 @@ class FrameSwitchColor(Frame):
         Shows or hides the scrollbar depending on the size of the content in the canvas.
         """
         if self.canvas.bbox("all")[3] > self.canvas.winfo_height():
-            self.scrollbar.pack(side=tk.RIGHT, fill="y")
+            self.scrollbar.pack(side='right', fill="y")
         else:
             self.scrollbar.pack_forget()
 

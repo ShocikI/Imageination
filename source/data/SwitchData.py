@@ -1,4 +1,4 @@
-from tkinter.ttk import Button, Frame, Labelframe, Scrollbar
+from tkinter.ttk import Button, Frame, Labelframe
 from tkinter import Listbox
 
 import source.ops.FrameSwitchColorOperators as ops

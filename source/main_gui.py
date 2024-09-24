@@ -2,10 +2,8 @@ from tkinter import Tk
 
 from source.components import MenuBar as mb
 from source.components import Modes
-from source.components.frames import FrameSelectFile as fsf
 
 from source.data.SystemData import SystemData
-from source.data import SwitchData as sd
 
 class GUI:
     """

@@ -1,4 +1,4 @@
-from tkinter.ttk import Notebook, Frame, Label
+from tkinter.ttk import Notebook
 
 from source.components.frames.FrameSelectFile import FrameSelectFile
 from source.components.frames.FrameSwitchColor import FrameSwitchColor

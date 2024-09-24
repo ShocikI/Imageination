@@ -1,27 +1,26 @@
-from tkinter.ttk import Button, Label, Frame, Labelframe, Combobox, Separator, Notebook
-import os
+from tkinter.ttk import Button, Frame, Labelframe, Combobox, Notebook
 
 import source.ops.FrameSelectFileOperators as ops
 from source.data.SystemData import SystemData
 
 
 class FrameSelectFile(Frame):
-    # """
-    # The FrameSelectFile class represents the UI component for selecting and removing image files.
-    # It allows the user to either select individual images or choose a folder containing images, 
-    # and also provides options to remove selected images or clear the selection.
+    """
+    The FrameSelectFile class represents the UI component for selecting and removing image files.
+    It allows the user to either select individual images or choose a folder containing images, 
+    and also provides options to remove selected images or clear the selection.
 
-    # Inherits from:
-    #     Frame: A Tkinter Frame widget that acts as a container for other widgets.
+    Inherits from:
+        Frame: A Tkinter Frame widget that acts as a container for other widgets.
 
-    # Attributes:
-    #     select_frame (Labelframe | None): Frame containing file selection buttons.
-    #     remove_frame (Labelframe | None): Frame containing file removal options.
-    #     get_img_button (Button | None): Button to select individual image files.
-    #     folder_img_button (Button | None): Button to select a folder containing images.
-    #     reset_button (Button | None): Button to clear all selected images.
-    #     remove_button (Button | None): Button to remove a selected image from the list.
-    # """
+    Attributes:
+        select_frame (Labelframe | None): Frame containing file selection buttons.
+        remove_frame (Labelframe | None): Frame containing file removal options.
+        get_img_button (Button | None): Button to select individual image files.
+        folder_img_button (Button | None): Button to select a folder containing images.
+        reset_button (Button | None): Button to clear all selected images.
+        remove_button (Button | None): Button to remove a selected image from the list.
+    """
     select_frame: Labelframe | None = None
     remove_frame: Labelframe | None = None
     get_img_button: Button | None = None
