@@ -1,43 +1,62 @@
-from tkinter import filedialog
-from tkinter.ttk import Button, Label, Frame, Labelframe, Combobox, Separator
+from tkinter.ttk import Button, Label, Frame, Labelframe, Combobox, Separator, Notebook
 import os
 
+import source.ops.FrameSelectFileOperators as ops
+from source.data.SystemData import SystemData
+
+
 class FrameSelectFile(Frame):
-    select_frame = None
-    remove_frame = None
-    get_img_button = None
-    folder_img_button = None
-    reset_button = None
-    file_list = None
-    remove_button = None
+    # """
+    # The FrameSelectFile class represents the UI component for selecting and removing image files.
+    # It allows the user to either select individual images or choose a folder containing images, 
+    # and also provides options to remove selected images or clear the selection.
 
-    def __init__(self, parent, props):
+    # Inherits from:
+    #     Frame: A Tkinter Frame widget that acts as a container for other widgets.
+
+    # Attributes:
+    #     select_frame (Labelframe | None): Frame containing file selection buttons.
+    #     remove_frame (Labelframe | None): Frame containing file removal options.
+    #     get_img_button (Button | None): Button to select individual image files.
+    #     folder_img_button (Button | None): Button to select a folder containing images.
+    #     reset_button (Button | None): Button to clear all selected images.
+    #     remove_button (Button | None): Button to remove a selected image from the list.
+    # """
+    select_frame: Labelframe | None = None
+    remove_frame: Labelframe | None = None
+    get_img_button: Button | None = None
+    folder_img_button: Button | None = None
+    reset_button: Button | None = None
+    remove_button: Button | None = None
+
+    def __init__(self, parent: Notebook, data: SystemData) -> None:
+        """
+        Initializes the FrameSelectFile UI component.
+
+        Args:
+            parent (Notebook): The parent widget, typically a Notebook tab.
+            data (SystemData): System-wide data structure holding file and color switch information.
+        """
         Frame.__init__(self, parent)
-        self.create(props)
+        self.create(data)
 
-    def create(self, props):
+    def create(self, data: SystemData) -> None:
+        """
+        Creates and configures the layout of the file selection and removal components.
+
+        Args:
+            data (SystemData): The data object that manages file selection and list of files.
+        """
         self['padding'] = (10, 5)
 
         self.select_frame = Labelframe(self, text="Select files")
-        self.get_img_button = Button(
-            self.select_frame, text="Select images", 
-            command=lambda: self.select_files(props)
-        )
-        self.folder_img_button = Button(
-            self.select_frame, text="Select folder", 
-            command=lambda: self.select_folder(props)
-        )
+        self.get_img_button = Button(self.select_frame, text="Select images", command=lambda: ops.select_files(data))
+        self.folder_img_button = Button(self.select_frame, text="Select folder", command=lambda: ops.select_folder(data))
 
         self.remove_frame = Labelframe(self, text="Remove one image")
-        self.remove_button = Button(
-            self.remove_frame, text="Remove selected", 
-            command=lambda: self.remove_file(props)
-        )
-        self.file_list = Combobox(self.remove_frame, values=props['file_names'], justify='right', xscrollcommand=True)
-        self.reset_button = Button(
-            self.remove_frame, text="Clear selection", 
-            command=lambda: self.clear_selection(props)
-        )
+        self.remove_button = Button(self.remove_frame, text="Remove selected", command=lambda: ops.remove_file(data))
+        data.file_list = Combobox(self.remove_frame, values=data.file_names, justify='right', xscrollcommand=True)
+        self.reset_button = Button(self.remove_frame, text="Clear selection", command=lambda: ops.clear_selection(data))
 
         # Grid
         self.select_frame.grid(column=2, row=1)
@@ -49,50 +68,10 @@ class FrameSelectFile(Frame):
         self.get_img_button['padding'] = (10,5)
         self.folder_img_button.grid(column=7, row=2, columnspan=4, padx=(5, 0), pady=(0, 5), sticky=("W", "E"))
         self.folder_img_button['padding'] = (10,5)
-        self.file_list.grid(column=1, row=2, columnspan=10, sticky=("W", "E"))
+        data.file_list.grid(column=1, row=2, columnspan=10, sticky=("W", "E"))
         self.remove_button.grid(column=2, row=4, columnspan=4, padx=(0, 5), pady=(5), sticky=("W", "E"))
         self.remove_button['padding'] = (10,5)
         self.reset_button.grid(column=7, row=4, columnspan=4, padx=(5, 0), pady=(5), sticky=("W", "E"))
         self.reset_button['padding'] = (10,5)
 
-    def select_files(self, props) -> None:
-        file = filedialog.askopenfilenames()
-        if file == "":
-            return
-        
-        file_list = list(file)
-        for f in file_list:
-            if f.endswith(".png") or f.endswith(".jpg") or f.endswith(".jpeg"):
-                props['file_names'].append(f)
-
-        if len(props['file_names']) > 0:
-            self.file_list['values'] = props['file_names']
-            self.file_list.set("")
-
-    def select_folder(self, props) -> None:
-        folder_name = filedialog.askdirectory().replace("/", "\\")
-        if folder_name == "":
-            return
-
-        os.chdir(folder_name)
-        for f in list(os.listdir()):
-            if f.endswith(".png") or f.endswith(".jpg") or f.endswith(".jpeg"):
-                props['file_names'].append(os.path.join(folder_name, f))
     
-        if len(props['file_names']) > 0:
-            self.file_list['values'] = props['file_names']
-            self.file_list.set("")
-
-    def remove_file(self, props) -> None:
-        name = self.file_list.get()
-        if name != '':
-            index = props['file_names'].index(name)
-            props['file_names'].pop(index)
-            self.file_list['values'] = props['file_names']
-            self.file_list.set("")
-
-    def clear_selection(self, props) -> None:
-        props['file_names'] = []
-        self.file_list['values'] = props['file_names']
-        self.file_list.set("")
-        print("List has been cleared.")

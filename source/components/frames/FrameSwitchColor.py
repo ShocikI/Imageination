@@ -1,29 +1,46 @@
-from tkinter.ttk import Frame, Button, Labelframe, Scrollbar
-from tkinter import Listbox, Toplevel, Canvas, messagebox, PhotoImage
+from tkinter.ttk import Frame, Button, Labelframe, Scrollbar, Notebook
+from tkinter import Listbox, Toplevel, Canvas, messagebox, PhotoImage, Event
 from PIL import Image, ImageTk
 
 from source.ops import FrameSwitchColorOperators as ops
-from source.data import SwitchData as sd
+from source.data.SystemData import SystemData, SwitchData
 
 
 class FrameSwitchColor(Frame):
-    canvas = None
-    window = None
-    scrollbar = None
-    scr_frame = None
-    b_pop_up = None
-    b_generate = None
-    pop_up = None
-    zoom_window = None
+    """
+    FrameSwitchColor creates a GUI frame for color switch operations within a scrollable canvas.
+    It handles user interactions for selecting and switching colors from images, as well as generating output images.
+    """
+    canvas: Canvas | None = None
+    scrollbar: Scrollbar | None = None
+    scr_frame: Frame | None = None
+    b_pop_up: Button | None = None
+    b_generate: Button | None = None
+    pop_up: Toplevel | None = None
+    zoom_window: Toplevel | None = None
     
-    zoom_factor = 15
-    zoom_area_size = 10 
+    ZOOM_FACTOR: int = 15
+    ZOOM_AREA_SIZE: int = 10 
 
-    def __init__(self, parent, props):
+    def __init__(self, parent: Notebook, data: SystemData):
+        """
+        Initializes the FrameSwitchColor.
+
+        Args:
+            parent (Notebook): The parent Notebook widget.
+            data (SystemData): An instance of SystemData holding information related to switches and image data.
+        """
         Frame.__init__(self, parent)
-        self.create(props)
+        self.create(data)
 
-    def create(self, props):
+    def create(self, data: SystemData):
+        """
+        Initializes the FrameSwitchColor.
+
+        Args:
+            parent (Notebook): The parent Notebook widget.
+            data (SystemData): An instance of SystemData holding information related to switches and image data.
+        """
         self['padding'] = (10, 5)
         # Create Canvas in Frame to make Scrollable Frame
         # self > Canvas > Frame
@@ -31,21 +48,17 @@ class FrameSwitchColor(Frame):
         self.scrollbar = Scrollbar(self, orient='vertical', command=self.canvas.yview)
         self.scr_frame = Frame(self.canvas)
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.canvas.create_window((0, 0), window=self.scr_frame, anchor="nw")
 
-        self.window = self.canvas.create_window((0, 0), window=self.scr_frame, anchor="nw")
-
-        self.b_pop_up = Button(
-            self.scr_frame, text="Select color to switch", 
-            command=lambda: self.draw_pop_up(props)
-        )
+        self.b_pop_up = Button(self.scr_frame, text="Select color to switch", command=lambda: self.draw_pop_up(data))
         self.b_pop_up['padding'] = (15, 5)
 
-        for data in props['switch_data']:
+        for _ in data.switch_data:
             self.create_switch_frame(color_hex)
 
         self.b_generate = Button(
             self.scr_frame, text="Generate images",
-            command=lambda: (ops.generate_images(props), self.update_grid(props))
+            command=lambda: (ops.generate_images(data), self.update_grid(data))
         )
         self.b_generate['padding'] = (15, 5)
 
@@ -61,7 +74,12 @@ class FrameSwitchColor(Frame):
         self.scr_frame.bind("<Configure>", self.on_frame_configure)
 
     def _on_mouse_wheel(self, event):
-        """Handle mouse wheel scrolling"""
+        """
+        Handles mouse wheel scrolling for Windows, Linux, and macOS.
+
+        Args:
+            event (Event): The event object containing details of the mouse scroll.
+        """
         if event.num == 4:  # macOS scroll up
             self.canvas.yview_scroll(-1, "units")
         elif event.num == 5:  # macOS scroll down
@@ -70,25 +88,38 @@ class FrameSwitchColor(Frame):
             self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")  # Windows/Linux scroll
 
     def on_frame_configure(self, event=None):
-        """Funkcja wywoływana przy każdej zmianie rozmiaru frame"""
+        """
+        Updates the canvas scrolling region based on the size of the frame.
+
+        Args:
+            event (Event, optional): The event object. Defaults to None.
+        """
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-
     def show_scrollbar_when_needed(self):
+        """
+        Shows or hides the scrollbar depending on the size of the content in the canvas.
+        """
         if self.canvas.bbox("all")[3] > self.canvas.winfo_height():
             self.scrollbar.pack(side=tk.RIGHT, fill="y")
         else:
             self.scrollbar.pack_forget()
 
-    def update_grid(self, props):
+    def update_grid(self, data: SystemData):
+        """
+        Updates the grid layout within the scrollable frame, regenerating it based on current switch data.
+
+        Args:
+            data (SystemData): The data structure holding switch data for color switching.
+        """
         for widget in self.grid_slaves():
             widget.grid_forget()
 
         self.b_pop_up.grid(column=2, row=1, sticky='we')
         row = 2
         # Sprawdź, czy są dane w switch_data
-        if len(props['switch_data']) > 0:
-            for item in props['switch_data']:
+        if len(data.switch_data) > 0:
+            for item in data.switch_data:
                 item.grid_up(1, row)
                 row += 3
             
@@ -97,11 +128,17 @@ class FrameSwitchColor(Frame):
         else:
             self.b_generate.grid_remove()
 
-    def draw_pop_up(self, props):
-        if len(props['file_names']) != 1:
+    def draw_pop_up(self, data: SystemData):
+        """
+        Draws a pop-up window to allow the user to select a pixel from the image for color switching.
+
+        Args:
+            data (SystemData): The data structure holding image and switch data.
+        """
+        if len(data.file_names) != 1:
             messagebox.showinfo(message='Select 1 image in "File selection".')
             return None
-        image_data = Image.open(props['file_names'][0])
+        image_data = Image.open(data.file_names[0])
         w, h = image_data.size
         image_to_display = ImageTk.PhotoImage(image_data)    
 
@@ -116,31 +153,36 @@ class FrameSwitchColor(Frame):
         self.zoom_window.overrideredirect(True)
         self.zoom_window.attributes("-topmost", True)
         self.zoom_window.withdraw() 
-        zoom_canvas = Canvas(
-            self.zoom_window, 
-            width=self.zoom_area_size * self.zoom_factor, 
-            height=self.zoom_area_size * self.zoom_factor
-        )
+        zoom_canvas = Canvas(self.zoom_window, width=self.ZOOM_AREA_SIZE * self.ZOOM_FACTOR, height=self.ZOOM_AREA_SIZE * self.ZOOM_FACTOR)
         zoom_canvas.pack(side="right")
 
-        canvas.bind("<Button-1>", lambda event: self.get_pixel_color(event, image_data, 1, props))
+        canvas.bind("<Button-1>", lambda event: self.get_pixel_color(event, image_data, 1, data))
         canvas.bind("<Button-3>", lambda event: (
             self.zoom_window.deiconify(), 
-            self.show_zoom(event, image_data, zoom_canvas, props)
+            self.show_zoom(event, image_data, zoom_canvas, data)
         ))
 
-    def show_zoom(self, event, data, zoom_canvas, props):
+    def show_zoom(self, event: Event, image_data: Image, zoom_canvas: Canvas, data: SystemData):
+        """
+        Displays a zoomed-in section of the image near the selected pixel.
+
+        Args:
+            event (Event): The event object containing the mouse click position.
+            image_data (Image): The image object being zoomed in.
+            zoom_canvas (Canvas): The canvas displaying the zoomed-in image.
+            data (SystemData): The data structure holding system and switch data.
+        """
         x, y = event.x, event.y
         
-        half_area = self.zoom_area_size  // 2
+        half_area = self.ZOOM_AREA_SIZE  // 2
         box = (x - half_area, y - half_area, x + half_area, y + half_area)
         
-        if box[0] < 0 or box[1] < 0 or box[2] > data.width or box[3] > data.height:
+        if box[0] < 0 or box[1] < 0 or box[2] > image_data.width or box[3] > image_data.height:
             return
         
-        cropped_image = data.crop(box)
+        cropped_image = image_data.crop(box)
         zoomed_image = cropped_image.resize(
-            (self.zoom_area_size  * self.zoom_factor, self.zoom_area_size  * self.zoom_factor), 
+            (self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR, self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR), 
             Image.NEAREST
         )
         
@@ -148,29 +190,37 @@ class FrameSwitchColor(Frame):
         zoom_canvas.create_image(0, 0, anchor='nw', image=tk_zoomed_image)
         zoom_canvas.image = tk_zoomed_image 
         
-        self.zoom_window.geometry(f"+{event.x_root - self.zoom_area_size  * self.zoom_factor // 2}+{event.y_root - self.zoom_area_size  * self.zoom_factor // 2}")
+        self.zoom_window.geometry(f"+{event.x_root - self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR // 2}+{event.y_root - self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR // 2}")
         self.zoom_window.lift()
         self.zoom_window.attributes("-topmost", True)
 
         zoom_canvas.delete("border")
-        zoom_canvas.create_rectangle(0, 0, self.zoom_area_size  * self.zoom_factor, self.zoom_area_size  * self.zoom_factor, outline="black", width=3, tags="border")
+        zoom_canvas.create_rectangle(0, 0, self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR, self.ZOOM_AREA_SIZE  * self.ZOOM_FACTOR, outline="black", width=3, tags="border")
 
-        zoom_canvas.bind("<Button-1>", lambda new_event: self.get_pixel_color(new_event, cropped_image, self.zoom_factor, props))
+        zoom_canvas.bind("<Button-1>", lambda new_event: self.get_pixel_color(new_event, cropped_image, self.ZOOM_FACTOR, data))
 
-    def get_pixel_color(self, event, data, multiplier, props):
+    def get_pixel_color(self, event: Event, image_data: Image, multiplier: float, data: SystemData):
+        """
+        Captures the RGB value of the pixel the user clicked and updates the switch data if it's a new color.
+
+        Args:
+            event (Event): The event object containing the mouse click position.
+            image_data (Image): The image from which the pixel color is selected.
+            multiplier (float): Scaling factor for zooming purposes.
+            data (SystemData): The data structure holding switch data and image information.
+        """
         x, y = int(event.x / multiplier), int(event.y / multiplier)
-        rgb_pixel = data.getpixel((x, y))
+        rgb_pixel = image_data.getpixel((x, y))
 
         is_new = True
-        if len(props['switch_data']):
-            for data in props['switch_data']:
-                if list(data.rgb_color) == list(rgb_pixel):
+        if len(data.switch_data):
+            for image_data in data.switch_data:
+                if list(image_data.rgb_color) == list(rgb_pixel):
                     is_new = False
 
         self.zoom_window.destroy()
         self.pop_up.destroy()
 
         if is_new:
-            print(f"Add new color {rgb_pixel}")
-            props['switch_data'].append(sd.SwitchData(self.scr_frame, props, rgb_pixel))
-            self.update_grid(props)
+            data.switch_data.append(SwitchData(self.scr_frame, data, rgb_pixel))
+            self.update_grid(data)
