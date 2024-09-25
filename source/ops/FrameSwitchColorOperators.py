@@ -3,6 +3,7 @@ from PIL import Image
 import numpy as np
 from itertools import product
 import os
+from math import sqrt
 
 
 def select_target_color(item) -> None:
@@ -162,10 +163,10 @@ def make_look_up_table(matrix: np.array, data) -> dict:
             elif tolerance_type == "Spherical" and tol_value > 0:
                 for row in range(len(matrix)):
                     for column in range(len(matrix[row])):
-                        r = abs(item.rgb_color[0] - int(matrix[row][column][0]))
-                        g = abs(item.rgb_color[1] - int(matrix[row][column][1]))
-                        b = abs(item.rgb_color[2] - int(matrix[row][column][2]))
-                        if r + b + g < tol_value:
+                        r = (item.rgb_color[0] - int(matrix[row][column][0])) ** 2
+                        g = (item.rgb_color[1] - int(matrix[row][column][1])) ** 2
+                        b = (item.rgb_color[2] - int(matrix[row][column][2])) ** 2
+                        if sqrt(r + b + g) < tol_value:
                             table[item.hex_color].append((row, column))
 
             else:
