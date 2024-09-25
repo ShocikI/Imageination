@@ -150,24 +150,25 @@ def make_look_up_table(matrix: np.array, data) -> dict:
         if item.use_tolerance:
             tolerance_type = item.box_tolerance.get()
             tol_value = item.tolerance_value.get()
+            keep_diff = item.keep_difference
 
             if tolerance_type == 'Cubic' and tol_value > 0:
                 for row in range(len(matrix)):
                     for column in range(len(matrix[row])):
-                        r = abs(item.rgb_color[0] - int(matrix[row][column][0]))
-                        g = abs(item.rgb_color[1] - int(matrix[row][column][1]))
-                        b = abs(item.rgb_color[2] - int(matrix[row][column][2]))
-                        if r < tol_value and g < tol_value and b < tol_value:
-                            table[item.hex_color].append((row, column))
+                        r = int(matrix[row][column][0]) - item.rgb_color[0] 
+                        g = int(matrix[row][column][1]) - item.rgb_color[1] 
+                        b = int(matrix[row][column][2]) - item.rgb_color[2] 
+                        if abs(r) < tol_value and abs(g) < tol_value and abs(b) < tol_value:
+                            table[item.hex_color].append((row, column, keep_diff, r, g, b))
 
             elif tolerance_type == "Spherical" and tol_value > 0:
                 for row in range(len(matrix)):
                     for column in range(len(matrix[row])):
-                        r = (item.rgb_color[0] - int(matrix[row][column][0])) ** 2
-                        g = (item.rgb_color[1] - int(matrix[row][column][1])) ** 2
-                        b = (item.rgb_color[2] - int(matrix[row][column][2])) ** 2
-                        if sqrt(r + b + g) < tol_value:
-                            table[item.hex_color].append((row, column))
+                        r = int(matrix[row][column][0]) - item.rgb_color[0]
+                        g = int(matrix[row][column][1]) - item.rgb_color[1]
+                        b = int(matrix[row][column][2]) - item.rgb_color[2]
+                        if sqrt(r*r + g*g + b*b) < tol_value:
+                            table[item.hex_color].append((row, column, keep_diff, r, g, b))
 
             else:
                 for row in range(len(matrix)):
@@ -194,10 +195,31 @@ def generate_file(matrix: np.array, table: dict, combination: list[tuple], index
         combination (list[tuple]): A list of color transformations (RGB and target color).
         index (int): The index used to name the generated image file.
     """
+    i = 0
     for rgb, target in combination:
-        for row, column in table[target]:
-            matrix[row, column] = list(rgb)
-    
+        for row, column, keep_diff, r, g, b in table[target]:
+            if keep_diff:
+                new_r = list(rgb)[0] + r
+                if new_r < 0: new_r = 0
+                if new_r > 255: new_r = 255
+
+                new_g = list(rgb)[1] + g
+                if new_g < 0: new_g = 0
+                if new_g > 255: new_g = 255
+
+                new_b = list(rgb)[2] + b
+                if new_b < 0: new_b = 0
+                if new_b > 255: new_b = 255
+
+
+            else:
+                new_r, new_g, new_b = list(rgb)
+            i+= 1
+            if not i % 1000:
+                print(f"{matrix[row][column]} = {[new_r, new_g, new_b]}")
+            matrix[row][column] = [new_r, new_g, new_b]
+            
+
     new_image = Image.fromarray(matrix)
 
     new_image.save(f"combination_{index}.jpg")

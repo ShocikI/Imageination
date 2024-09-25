@@ -30,10 +30,11 @@ class SwitchData(Labelframe):
     box_color: Listbox | None = None
     box_switches: Listbox | None = None
     tolerance_type = {"Cubic", "Sphere"}
-    tolerance_value: int
+    tolerance_value: IntVar
     b_add: Button | None = None
     b_remove: Button | None = None
     b_remove_frame: Button | None = None
+    check_keep_diff: Checkbutton | None = None
 
     def __init__(self, parent: Frame, data, rgb: tuple, hex: str | None = None):
         """
@@ -71,12 +72,14 @@ class SwitchData(Labelframe):
         self.box_switches = Listbox(self, height=5)
 
         self.use_tolerance = BooleanVar(self, value=False, name="Use tolerance")
+        self.keep_difference = BooleanVar(self, value=False, name="Keep difference")
         self.tolerance_value = IntVar()
         self.check_tolerance = Checkbutton(self, text="Use tolerance", variable=self.use_tolerance, onvalue=True, offvalue=False, command=self.toggle_tolerance_option, width=20)
         self.label_box = Label(self, text="Tolerance type: ")
         self.box_tolerance = Combobox(self, values=["Cubic", "Spherical"], justify='left', width=9)
         self.label_spin = Label(self, text="Tolerance value: ")
         self.spin_tolerance = Spinbox(self, from_=0, to=128, textvariable=self.tolerance_value, width=4)
+        self.check_keep_diff = Checkbutton(self, text="Keep difference", variable=self.keep_difference, onvalue=True, offvalue=False, width=20)
 
         self.b_add = Button(self, text="Select target color", command=lambda: ops.select_target_color(self) )
         self.b_add['padding'] = (10, 5)
@@ -116,8 +119,10 @@ class SwitchData(Labelframe):
             self.box_tolerance.grid(column=3, row=5, padx=(0,10), pady=5, sticky="w")
             self.label_spin.grid(column=1, row=6, padx=5, columnspan=2, sticky="w")
             self.spin_tolerance.grid(column=3, row=6, sticky="w")
+            self.check_keep_diff.grid(column=1, row=7, columnspan=3, sticky='w')
         else:
             self.label_box.grid_forget()
             self.box_tolerance.grid_forget()
             self.label_spin.grid_forget()
             self.spin_tolerance.grid_forget()
+            self.check_keep_diff.grid_forget()
