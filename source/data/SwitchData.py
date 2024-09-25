@@ -20,17 +20,25 @@ class SwitchData(Labelframe):
         check_tolerance (Checkbutton | None): A Checkbutton to enable or disable tolerance use for color switching.
         tolerance_type (set): A set of tolerance calculation methods, such as "Cubic" or "Sphere".
         tolerance_value (IntVar): An integer variable storing the tolerance value for color switching.
+        use_tolerance (BooleanVar): An boolean variable storing user decision about tolerance usage.
+        keep_difference (BooleanVar): An boolean variable storing user decision tp keep a difference between pixel
+                                      values before and after color switching.
         b_add (Button | None): A button to open a color chooser for selecting target colors.
         b_remove (Button | None): A button to remove the selected color from the target color list.
         b_remove_frame (Button | None): A button to remove this frame from the parent widget.
+        check_keep_diff (Checkbutton | None): A Checkbutton to enable or disable keeping a difference during color 
+                                              switching.
     """
     rgb_color: tuple
     hex_color: str
     color_list: list[str]
     box_color: Listbox | None = None
     box_switches: Listbox | None = None
+    check_tolerance: Checkbutton | None = None
     tolerance_type = {"Cubic", "Sphere"}
     tolerance_value: IntVar
+    use_tolerance: BooleanVar
+    keep_difference: BooleanVar
     b_add: Button | None = None
     b_remove: Button | None = None
     b_remove_frame: Button | None = None

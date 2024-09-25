@@ -117,7 +117,7 @@ class FrameSwitchColor(Frame):
 
         self.b_pop_up.grid(column=2, row=1, sticky='we')
         row = 2
-        # Sprawdź, czy są dane w switch_data
+        # Chcek data in switch_data
         if len(data.switch_data) > 0:
             for item in data.switch_data:
                 item.grid_up(1, row)
