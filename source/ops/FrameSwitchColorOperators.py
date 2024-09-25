@@ -111,27 +111,57 @@ def validate_data(data) -> bool:
 
     return False
 
-def make_look_up_table(matrix: np.array, data: list) -> dict:
+def make_look_up_table(matrix: np.array, data) -> dict:
     """
     Creates a lookup table that maps color hex values to the corresponding pixel coordinates
     in the image matrix where the colors are found.
 
     Args:
         matrix (np.array): A 2D array representing the pixel data of the image.
-        data (list): A list of items that contain the colors to be looked up.
+        data (list[SwitchData]): A list of items that contain the colors to be looked up.
 
     Returns:
         dict: A dictionary mapping hex color values to the pixel coordinates in the matrix.
     """
+    # Create look up table
     table = {}
     for item in data:
         table[item.hex_color] = []
+    # Check tolerance usage
+    for item in data:
+        if item.use_tolerance:
+            tolerance_type = item.box_tolerance.get()
+            tol_value = item.tolerance_value.get()
 
-    for row in range(len(matrix)):
-        for column in range(len(matrix[row])):
-            for item in data:
-                if list(item.rgb_color) == list(matrix[row][column]):
-                    table[item.hex_color].append((row, column))
+            if tolerance_type == 'Cubic' and tol_value > 0:
+                for row in range(len(matrix)):
+                    for column in range(len(matrix[row])):
+                        r = abs(item.rgb_color[0] - int(matrix[row][column][0]))
+                        g = abs(item.rgb_color[1] - int(matrix[row][column][1]))
+                        b = abs(item.rgb_color[2] - int(matrix[row][column][2]))
+                        if r < tol_value and g < tol_value and b < tol_value:
+                            table[item.hex_color].append((row, column))
+
+            elif tolerance_type == "Spherical" and tol_value > 0:
+                for row in range(len(matrix)):
+                    for column in range(len(matrix[row])):
+                        r = abs(item.rgb_color[0] - int(matrix[row][column][0]))
+                        g = abs(item.rgb_color[1] - int(matrix[row][column][1]))
+                        b = abs(item.rgb_color[2] - int(matrix[row][column][2]))
+                        if r + b + g < tol_value:
+                            table[item.hex_color].append((row, column))
+
+            else:
+                for row in range(len(matrix)):
+                    for column in range(len(matrix[row])):
+                        if list(item.rgb_color) == list(matrix[row][column]):
+                            table[item.hex_color].append((row, column))
+
+        else:
+            for row in range(len(matrix)):
+                for column in range(len(matrix[row])):
+                    if list(item.rgb_color) == list(matrix[row][column]):
+                        table[item.hex_color].append((row, column))
 
     return table
 
