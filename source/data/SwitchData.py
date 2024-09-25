@@ -7,21 +7,22 @@ import source.ops.sys_operators as sops
 
 class SwitchData(Labelframe):
     """
-    The SwitchData class represents a labeled frame in the GUI, which stores information 
-    about a specific color and allows users to select target colors for switching.
-    
+    The SwitchData class represents a labeled frame in the GUI for managing color switching operations.
+    It allows users to select an original color and specify target colors to switch to, with options for 
+    tolerance handling and various operations on the color data.
+
     Attributes:
-        rgb_color (tuple): The RGB value of the original color.
+        rgb_color (tuple): The RGB value of the original color (as a tuple of three integers).
         hex_color (str): The hexadecimal representation of the original color.
-        color_list (list[str]): A list of target colors to switch to.
+        color_list (list[str]): A list of target colors for switching, represented as hexadecimal strings.
         box_color (Listbox | None): A Listbox displaying the current color in hex format.
-        box_switches (Listbox | None): A Listbox displaying the selected target colors.
-        check_tolerance (Checkbox | None): A Checkbox to choose a usage of tolerance.
-        tolerance_type (dict): A 
-        tolerance (int): A 
+        box_switches (Listbox | None): A Listbox showing the list of selected target colors.
+        check_tolerance (Checkbutton | None): A Checkbutton to enable or disable tolerance use for color switching.
+        tolerance_type (set): A set of tolerance calculation methods, such as "Cubic" or "Sphere".
+        tolerance_value (IntVar): An integer variable storing the tolerance value for color switching.
         b_add (Button | None): A button to open a color chooser for selecting target colors.
-        b_remove (Button | None): A button to remove the selected color from the list.
-        b_remove_frame (Button | None): A button to remove the entire color switch frame.
+        b_remove (Button | None): A button to remove the selected color from the target color list.
+        b_remove_frame (Button | None): A button to remove this frame from the parent widget.
     """
     rgb_color: tuple
     hex_color: str
@@ -36,14 +37,14 @@ class SwitchData(Labelframe):
 
     def __init__(self, parent: Frame, data, rgb: tuple, hex: str | None = None):
         """
-        Initializes a new SwitchData frame with a given RGB color and optional hex value.
+        Initializes a new SwitchData frame with the specified RGB color and optional hexadecimal value.
 
         Args:
             parent (Frame): The parent widget in which this frame is placed.
-            data (SystemData): Application properties passed for additional operations (e.g., removing frames).
-            rgb (tuple): The RGB color to switch from.
-            hex (str | None): Optional hexadecimal representation of the color. If not provided,
-                              the hex value is computed from the RGB color.
+            data (SystemData): Application data used for frame operations, such as managing other frames.
+            rgb (tuple): The RGB color represented as a tuple of three integers.
+            hex (str | None): Optional hexadecimal representation of the color. If not provided, it is
+                              computed based on the RGB color.
         """
         self.rgb_color = rgb
         if hex:
@@ -57,11 +58,11 @@ class SwitchData(Labelframe):
 
     def create(self, data):
         """
-        Creates and arranges the widgets inside the frame, including the color display listbox, 
-        target color listbox, and buttons for adding/removing colors and removing the frame.
+        Creates and arranges the widgets inside the frame. This includes the original color display, 
+        the target color list, buttons for adding/removing colors, and options for tolerance management.
 
         Args:
-            data (SystemData): Application properties used for certain operations, such as removing the frame.
+            data (SystemData): Application properties used for operations like removing this frame.
         """
         self.box_color = Listbox(self, height=1)
         self.box_color.insert(1, self.hex_color)
@@ -88,11 +89,11 @@ class SwitchData(Labelframe):
 
     def grid_up(self, column, row):
         """
-        Places the frame and its components in the specified grid layout of the parent widget.
+        Places the SwitchData frame and its components in the specified grid layout of the parent widget.
 
         Args:
-            column (int): The column position in the grid layout.
-            row (int): The row position in the grid layout.
+            column (int): The column position in the parent widget's grid layout.
+            row (int): The row position in the parent widget's grid layout.
         """
         self.columnconfigure([1,3], weight=1)
         self.grid(column=column, row=row, columnspan=3)
@@ -106,6 +107,10 @@ class SwitchData(Labelframe):
         self.b_remove_frame.grid(column=5, row=3, columnspan=3, padx=5, pady=5, ipady=5, sticky='we')
 
     def toggle_tolerance_option(self):
+        """
+        Toggles the visibility of the tolerance options (type and value) based on the state 
+        of the 'Use tolerance' checkbox.
+        """
         if self.use_tolerance.get():
             self.label_box.grid(column=1, row=5, padx=5, columnspan=2, sticky="w")
             self.box_tolerance.grid(column=3, row=5, padx=(0,10), pady=5, sticky="w")

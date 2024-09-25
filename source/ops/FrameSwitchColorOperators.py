@@ -42,11 +42,28 @@ def remove_frame(frame, data) -> None:
 
 def generate_images(data) -> None:
     """
-    Generates new image files by applying color transformations to the selected file 
-    based on the user's color choices. After the images are generated, the program is reset.
+    Generates new image files by applying color transformations to the selected image based on the user's color switching preferences. 
+    This involves creating multiple combinations of color changes and saving each variation as a new image file. 
+    Once the images are generated, the program resets the user's color selections and file data.
 
     Args:
-        data (SystemData): An object containing the image file names and the user's selected switch_data (color transformations).
+        data (SystemData): An object containing:
+            - file_names (list[str]): A list of file names representing the images to be processed.
+            - switch_data (list[SwitchData]): A list of SwitchData objects, each representing the user's 
+              selected color switches and transformations.
+
+    Workflow:
+        1. The function first removes any SwitchData entries where no target colors are selected.
+        2. Validates if the `switch_data` is appropriate for further processing.
+        3. Prompts the user to select a target directory to save the generated images.
+        4. For each image, the function applies color transformations based on the switch data:
+            - Uses a lookup table to map original colors to new target colors.
+            - If multiple colors are selected for switching, generates all possible combinations of transformations.
+        5. Saves each generated image file in the target directory with unique color combinations.
+        6. After generating the images, the program is reset by removing the color switching frames and clearing the file data.
+
+    Returns:
+        None: The function performs its operations but does not return any value.
     """
     # Clear empty colors
     for item in reversed(data.switch_data):
@@ -113,15 +130,15 @@ def validate_data(data) -> bool:
 
 def make_look_up_table(matrix: np.array, data) -> dict:
     """
-    Creates a lookup table that maps color hex values to the corresponding pixel coordinates
-    in the image matrix where the colors are found.
+    Creates a lookup table mapping hex color values to pixel coordinates in the image matrix.
+    Supports exact color matching and tolerance-based matching (cubic or spherical) for approximate color matches.
 
     Args:
-        matrix (np.array): A 2D array representing the pixel data of the image.
-        data (list[SwitchData]): A list of items that contain the colors to be looked up.
+        matrix (np.array): 3D array representing image pixel data (rows, columns, RGB values).
+        data (list[SwitchData]): List of SwitchData objects containing color and tolerance settings.
 
     Returns:
-        dict: A dictionary mapping hex color values to the pixel coordinates in the matrix.
+        dict: A dictionary where keys are hex color values and values are lists of pixel coordinates (row, column).
     """
     # Create look up table
     table = {}
