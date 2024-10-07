@@ -2,6 +2,7 @@ from tkinter.ttk import Notebook
 
 from source.components.frames.FrameSelectFile import FrameSelectFile
 from source.components.frames.FrameSwitchColor import FrameSwitchColor
+from source.components.frames.FrameMeanImage import FrameMeanImage
 from source.data.SystemData import SystemData
 
 
@@ -33,3 +34,6 @@ class Modes(Notebook):
 
         f2 = FrameSwitchColor(self, data)
         self.add(f2, text="Switch colors")
+
+        f3 = FrameMeanImage(self, data)
+        self.add(f3, text="Mean image")
