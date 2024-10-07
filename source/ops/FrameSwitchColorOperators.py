@@ -5,6 +5,8 @@ from itertools import product
 import os
 from math import sqrt
 
+MIN_COLOR_VALUE = 0
+MAX_COLOR_VALUE = 255
 
 def select_target_color(item) -> None:
     """
@@ -174,13 +176,13 @@ def make_look_up_table(matrix: np.array, data) -> dict:
                 for row in range(len(matrix)):
                     for column in range(len(matrix[row])):
                         if list(item.rgb_color) == list(matrix[row][column]):
-                            table[item.hex_color].append((row, column))
+                            table[item.hex_color].append((row, column, keep_diff, 0, 0, 0))
 
         else:
             for row in range(len(matrix)):
                 for column in range(len(matrix[row])):
                     if list(item.rgb_color) == list(matrix[row][column]):
-                        table[item.hex_color].append((row, column))
+                        table[item.hex_color].append((row, column, keep_diff, 0, 0, 0))
 
     return table
 
@@ -200,25 +202,20 @@ def generate_file(matrix: np.array, table: dict, combination: list[tuple], index
         for row, column, keep_diff, r, g, b in table[target]:
             if keep_diff:
                 new_r = list(rgb)[0] + r
-                if new_r < 0: new_r = 0
-                if new_r > 255: new_r = 255
+                if new_r < MIN_COLOR_VALUE: new_r = MIN_COLOR_VALUE
+                elif new_r > MAX_COLOR_VALUE: new_r = MAX_COLOR_VALUE
 
                 new_g = list(rgb)[1] + g
-                if new_g < 0: new_g = 0
-                if new_g > 255: new_g = 255
+                if new_g < MIN_COLOR_VALUE: new_g = MIN_COLOR_VALUE
+                elif new_g > MAX_COLOR_VALUE: new_g = MAX_COLOR_VALUE
 
                 new_b = list(rgb)[2] + b
-                if new_b < 0: new_b = 0
-                if new_b > 255: new_b = 255
-
+                if new_b < MIN_COLOR_VALUE: new_b = MIN_COLOR_VALUE
+                elif new_b > MAX_COLOR_VALUE: new_b = MAX_COLOR_VALUE
 
             else:
                 new_r, new_g, new_b = list(rgb)
-            i+= 1
-            if not i % 1000:
-                print(f"{matrix[row][column]} = {[new_r, new_g, new_b]}")
             matrix[row][column] = [new_r, new_g, new_b]
-            
 
     new_image = Image.fromarray(matrix)
 
