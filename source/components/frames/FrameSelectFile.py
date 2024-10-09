@@ -48,13 +48,13 @@ class FrameSelectFile(Frame):
         self['padding'] = (10, 5)
 
         self.select_frame = Labelframe(self, text="Select files")
-        self.get_img_button = Button(self.select_frame, text="Select images", command=lambda: data.select_files(data))
-        self.folder_img_button = Button(self.select_frame, text="Select folder", command=lambda: data.select_folder(data))
+        self.get_img_button = Button(self.select_frame, text="Select images", command=lambda: data.select_files())
+        self.folder_img_button = Button(self.select_frame, text="Select folder", command=lambda: data.select_folder())
 
         self.remove_frame = Labelframe(self, text="Remove one image")
-        self.remove_button = Button(self.remove_frame, text="Remove selected", command=lambda: data.remove_file(data))
+        self.remove_button = Button(self.remove_frame, text="Remove selected", command=lambda: data.remove_file())
         data.file_list = Combobox(self.remove_frame, values=data.file_names, justify='right', xscrollcommand=True)
-        self.reset_button = Button(self.remove_frame, text="Clear selection", command=lambda: data.clear_selection(data))
+        self.reset_button = Button(self.remove_frame, text="Clear selection", command=lambda: data.clear_selection())
 
         # Grid
         self.select_frame.grid(column=2, row=1)
