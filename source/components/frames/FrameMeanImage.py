@@ -15,27 +15,40 @@ class FrameMeanImage(Frame):
 
         self.image_weight = IntVar(self, value=1)
 
-        data.mean_tree = Treeview(self, columns=("file", "weight"), show='headings', height=5)
+        data.mean_tree = Treeview(
+            self, 
+            columns=("file", "weight", "width", "height", 'mode'), 
+            show='headings', 
+            height=5
+        )
+        
         data.mean_tree.heading('file', text='File', anchor='w')
         data.mean_tree.heading('weight', text='Weight')
+        data.mean_tree.heading('width', text='Width')
+        data.mean_tree.heading('height', text='Height')
+        data.mean_tree.heading('mode', text='Mode')
+
         data.mean_tree.column('weight', width=50, stretch=False, anchor='e')
-        # print(data.mean_tree['columns'])
+        data.mean_tree.column('width', width=50, stretch=False, anchor='e')
+        data.mean_tree.column('height', width=50, stretch=False, anchor='e')
+        data.mean_tree.column('mode', width=75, stretch=False, anchor='e')
+        
         self.spin_weight = Spinbox(self, from_=1, to=100, justify='right', width=4)
         self.button_change_weight = Button(
             self, 
             command=lambda: ops.change_weight_of_elements(self.spin_weight, data), 
-            text="button_change_width"
+            text="Change weight"
         )
         self.button_remove_image = Button(
             self, 
             command=data.remove_selected_in_mean_image_tree, 
-            text="button_remove_image"
+            text="Remove selected"
         )
         self.separator = Separator(self, orient='horizontal')
         self.button_generate = Button(
             self, 
-            command=lambda _:print("button_generate"), 
-            text="button_generate"
+            command=lambda: ops.generate_mean_file(data), 
+            text="Generate file"
         )
 
         # Grid

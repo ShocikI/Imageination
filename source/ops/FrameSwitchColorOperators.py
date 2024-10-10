@@ -106,6 +106,7 @@ def generate_images(data) -> None:
         remove_frame(frame, data)
 
     data.file_names = []
+    data.mean_data = {}
 
     print("Finished!")
 
