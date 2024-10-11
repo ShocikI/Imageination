@@ -55,7 +55,7 @@ def generate_mean_file(data: SystemData) -> None:
     matrix = matrix / weight_sum
 
     # Prepare to save as image
-    matrix = np.array(matrix, dtype='uint8')
+    # matrix = np.array(matrix, dtype='uint8')
     new_image = Image.fromarray(matrix)
 
     new_image.save(f"mean_image_result.jpg")
@@ -72,29 +72,12 @@ def validate_data_for_generate(data: SystemData) -> tuple | None:
     # Check if every images have this same resolution
     resolution = []
     for _, height, width, mode in data.mean_data.values():
-        match mode:
-            case '1':
-                resolution.append((height, width, 1))
-            case 'L':
-                resolution.append((height, width, 1))
-            case 'P':
-                resolution.append((height, width, 1))
-            case 'I':
-                resolution.append((height, width, 1))
-            case 'F':
-                resolution.append((height, width, 1))
-            case 'RGB':
-                resolution.append((height, width, 3))
-            case 'YCbCr':
-                resolution.append((height, width, 3))
-            case 'LAB':
-                resolution.append((height, width, 3))
-            case 'HSV':
-                resolution.append((height, width, 3))
-            case 'RGBA':
-                resolution.append((height, width, 4))
-            case 'CMYK':
-                resolution.append((height, width, 4))
+        if mode in ['L']:
+            resolution.append((height, width, 1))
+        elif mode in ['RGB']:
+            resolution.append((height, width, 3))
+        elif mode in ['RGBA']:
+            resolution.append((height, width, 4))
     
     if len(set(resolution)) != 1:
         messagebox.showinfo(message='Selected files have different resolutions.')
