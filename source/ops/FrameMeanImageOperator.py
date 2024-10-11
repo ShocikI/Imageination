@@ -55,7 +55,7 @@ def generate_mean_file(data: SystemData) -> None:
     matrix = matrix / weight_sum
 
     # Prepare to save as image
-    # matrix = np.array(matrix, dtype='uint8')
+    matrix = np.array(matrix, dtype='uint8')
     new_image = Image.fromarray(matrix)
 
     new_image.save(f"mean_image_result.jpg")
