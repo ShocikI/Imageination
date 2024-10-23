@@ -53,7 +53,13 @@ class SystemData():
             for file in self.file_names:
                 if file not in self.mean_data.keys():
                     image = Image.open(file)
-                    self.mean_data[file] = (1, image.height, image.width, image.mode)
+                    self.mean_data[file] = {
+                        "weight": 1, 
+                        "height": image.height,
+                        "width": image.width,
+                        "mode": image.mode
+                    }
+                    # self.mean_data[file] = (1, image.height, image.width, image.mode)
             self.update_files_data()
 
 
@@ -75,7 +81,13 @@ class SystemData():
             for file in self.file_names:
                 if file not in self.mean_data.keys():
                     image = Image.open(file)
-                    self.mean_data[file] = (1, image.height, image.width, image.mode)
+                    self.mean_data[file] = {
+                        "weight": 1, 
+                        "height": image.height,
+                        "width": image.width,
+                        "mode": image.mode
+                    }
+                    # self.mean_data[file] = (1, image.height, image.width, image.mode)
             self.update_files_data()
 
 
@@ -134,6 +146,6 @@ class SystemData():
         # Draw tree
         if len(self.mean_data):
             for data in self.mean_data.keys():
-                weight, width, height, mode = self.mean_data[data]
-                self.mean_tree.insert("", 'end', values=(data, weight, height, width, mode))
+                item = self.mean_data[data]
+                self.mean_tree.insert("", 'end', values=(data, item['weight'], item['height'], item['width'], item['mode']))
     

@@ -198,7 +198,6 @@ def generate_file(matrix: np.array, table: dict, combination: list[tuple], index
         combination (list[tuple]): A list of color transformations (RGB and target color).
         index (int): The index used to name the generated image file.
     """
-    i = 0
     for rgb, target in combination:
         for row, column, keep_diff, r, g, b in table[target]:
             if keep_diff:

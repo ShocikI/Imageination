@@ -3,7 +3,6 @@ from tkinter import filedialog, messagebox
 from PIL import Image
 import numpy as np
 from os import chdir
-from skimage import io
 
 from source.data.SystemData import SystemData
 
@@ -21,8 +20,13 @@ def change_weight_of_elements(spinbox: Spinbox, data: SystemData) -> None:
     if len(selected_files):
         for file in selected_files:
             if file in data.mean_data.keys():
-                _, height, width, mode = data.mean_data[file]
-                data.mean_data[file] = (new_weight, height, width, mode)
+                item = data.mean_data[file]
+                data.mean_data[file] = {
+                        "weight": new_weight, 
+                        "height": item['height'],
+                        "width": item['width'],
+                        "mode": item['mode']
+                    }
 
     data.update_files_data()
 
@@ -44,7 +48,8 @@ def generate_mean_file(data: SystemData) -> None:
     weight_sum = 0
     for key in data.mean_data.keys():
         # Prepare values
-        weight, *_ = data.mean_data[key]
+        weight = data.mean_data[key]['weight']
+
         weight_sum += weight
         # Add image to prepared matrix
         image_matrix = np.array(Image.open(key), dtype=int)
@@ -71,14 +76,16 @@ def validate_data_for_generate(data: SystemData) -> tuple | None:
 
     # Check if every images have this same resolution
     resolution = []
-    for _, height, width, mode in data.mean_data.values():
-        if mode in ['L']:
-            resolution.append((height, width, 1))
-        elif mode in ['RGB']:
-            resolution.append((height, width, 3))
-        elif mode in ['RGBA']:
-            resolution.append((height, width, 4))
-    
+    if item['mode'] in ['L']:
+        channels = 1
+    elif item['mode'] in ['RGB']:
+        channels = 3
+    elif item['mode'] in ['RGBA']:
+        channels = 4
+
+    for item in data.mean_data.values():
+        resolution.append((item['height'], item['width'], channels))
+
     if len(set(resolution)) != 1:
         messagebox.showinfo(message='Selected files have different resolutions.')
         return None
