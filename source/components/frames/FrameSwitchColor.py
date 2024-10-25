@@ -139,6 +139,11 @@ class FrameSwitchColor(Frame):
             messagebox.showinfo(message='Select 1 image in "File selection".')
             return None
         image_data = Image.open(data.file_names[0])
+        color_mode = image_data.mode
+        if color_mode is 'RGB':
+            messagebox.showinfo(message='This operation is possible only for RGB images.')
+            return None
+
         w, h = image_data.size
         image_to_display = ImageTk.PhotoImage(image_data)    
 
