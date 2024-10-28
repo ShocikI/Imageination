@@ -5,20 +5,20 @@ from source.data.SystemData import SystemData
 
 class FrameSelectFile(Frame):
     """
-    The FrameSelectFile class represents the UI component for selecting and removing image files.
-    It allows the user to either select individual images or choose a folder containing images, 
-    and also provides options to remove selected images or clear the selection.
+    The FrameSelectFile class represents a UI component for selecting and managing image files.
+    This widget allows users to select individual images or an entire folder of images, and it
+    provides options to remove selected images or clear the current selection.
 
     Inherits from:
-        Frame: A Tkinter Frame widget that acts as a container for other widgets.
+        Frame: A Tkinter Frame widget that acts as a container for organizing other widgets.
 
     Attributes:
-        select_frame (Labelframe | None): Frame containing file selection buttons.
-        remove_frame (Labelframe | None): Frame containing file removal options.
-        get_img_button (Button | None): Button to select individual image files.
-        folder_img_button (Button | None): Button to select a folder containing images.
-        reset_button (Button | None): Button to clear all selected images.
-        remove_button (Button | None): Button to remove a selected image from the list.
+        select_frame (Labelframe | None): Frame containing buttons to select image files.
+        remove_frame (Labelframe | None): Frame containing controls for removing selected files.
+        get_img_button (Button | None): Button for selecting individual image files.
+        folder_img_button (Button | None): Button for selecting an entire folder of images.
+        reset_button (Button | None): Button for clearing the current selection of images.
+        remove_button (Button | None): Button for removing a selected image from the list.
     """
     select_frame: Labelframe | None = None
     remove_frame: Labelframe | None = None
@@ -29,21 +29,25 @@ class FrameSelectFile(Frame):
 
     def __init__(self, parent: Notebook, data: SystemData) -> None:
         """
-        Initializes the FrameSelectFile UI component.
+        Initializes the FrameSelectFile component and sets up the required UI structure.
 
         Args:
-            parent (Notebook): The parent widget, typically a Notebook tab.
-            data (SystemData): System-wide data structure holding file and color switch information.
+            parent (Notebook): The Notebook widget that acts as the parent container.
+            data (SystemData): The data manager instance containing file list and related methods.
         """
         Frame.__init__(self, parent)
         self.create(data)
 
     def create(self, data: SystemData) -> None:
         """
-        Creates and configures the layout of the file selection and removal components.
+        Creates and configures the file selection and removal layout within the FrameSelectFile component.
+
+        This method sets up a Labelframe for selecting files and another for managing selected files. 
+        It includes buttons for selecting individual images or folders, removing an image, and clearing 
+        the selection.
 
         Args:
-            data (SystemData): The data object that manages file selection and list of files.
+            data (SystemData): The data manager that stores file selection and provides associated actions.
         """
         self['padding'] = (10, 5)
 

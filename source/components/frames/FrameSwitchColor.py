@@ -8,8 +8,8 @@ from source.data.SystemData import SystemData, SwitchData
 
 class FrameSwitchColor(Frame):
     """
-    FrameSwitchColor creates a GUI frame for color switch operations within a scrollable canvas.
-    It handles user interactions for selecting and switching colors from images, as well as generating output images.
+    FrameSwitchColor creates a GUI frame for selecting and switching colors in images using a scrollable canvas.
+    The interface provides options to select colors from an image, display a zoomed view, and generate output images.
     """
     canvas: Canvas | None = None
     scrollbar: Scrollbar | None = None
@@ -24,22 +24,21 @@ class FrameSwitchColor(Frame):
 
     def __init__(self, parent: Notebook, data: SystemData):
         """
-        Initializes the FrameSwitchColor.
+        Initializes the FrameSwitchColor with a canvas and buttons for color selection.
 
         Args:
-            parent (Notebook): The parent Notebook widget.
-            data (SystemData): An instance of SystemData holding information related to switches and image data.
+            parent (Notebook): The parent Notebook widget containing tabs.
+            data (SystemData): Instance holding information on switches and loaded image data.
         """
         Frame.__init__(self, parent)
         self.create(data)
 
     def create(self, data: SystemData):
         """
-        Initializes the FrameSwitchColor.
+        Sets up the UI layout with a scrollable canvas and buttons for color operations.
 
         Args:
-            parent (Notebook): The parent Notebook widget.
-            data (SystemData): An instance of SystemData holding information related to switches and image data.
+            data (SystemData): Instance holding switch data for color management.
         """
         self['padding'] = (10, 5)
         # Create Canvas in Frame to make Scrollable Frame
@@ -75,10 +74,10 @@ class FrameSwitchColor(Frame):
 
     def _on_mouse_wheel(self, event):
         """
-        Handles mouse wheel scrolling for Windows, Linux, and macOS.
+        Handles mouse wheel scrolling across Windows, Linux, and macOS.
 
         Args:
-            event (Event): The event object containing details of the mouse scroll.
+            event (Event): Event object containing details of the scroll action.
         """
         if event.num == 4:  # macOS scroll up
             self.canvas.yview_scroll(-1, "units")
@@ -89,16 +88,16 @@ class FrameSwitchColor(Frame):
 
     def on_frame_configure(self, event=None):
         """
-        Updates the canvas scrolling region based on the size of the frame.
+        Adjusts the scrollable region of the canvas when the frame size changes.
 
         Args:
-            event (Event, optional): The event object. Defaults to None.
+            event (Event, optional): The event triggered by frame resizing. Defaults to None.
         """
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def show_scrollbar_when_needed(self):
         """
-        Shows or hides the scrollbar depending on the size of the content in the canvas.
+        Shows or hides the scrollbar depending on whether content overflows the visible canvas.
         """
         if self.canvas.bbox("all")[3] > self.canvas.winfo_height():
             self.scrollbar.pack(side='right', fill="y")
@@ -107,10 +106,10 @@ class FrameSwitchColor(Frame):
 
     def update_grid(self, data: SystemData):
         """
-        Updates the grid layout within the scrollable frame, regenerating it based on current switch data.
+        Refreshes the grid layout in the scrollable frame based on switch data updates.
 
         Args:
-            data (SystemData): The data structure holding switch data for color switching.
+            data (SystemData): Instance with updated switch data for color operations.
         """
         for widget in self.grid_slaves():
             widget.grid_forget()
@@ -130,10 +129,10 @@ class FrameSwitchColor(Frame):
 
     def draw_pop_up(self, data: SystemData):
         """
-        Draws a pop-up window to allow the user to select a pixel from the image for color switching.
+        Opens a pop-up window for color selection from an image by pixel selection.
 
         Args:
-            data (SystemData): The data structure holding image and switch data.
+            data (SystemData): Instance holding image and switch data.
         """
         if len(data.file_names) != 1:
             messagebox.showinfo(message='Select 1 image in "File selection".')
@@ -169,13 +168,13 @@ class FrameSwitchColor(Frame):
 
     def show_zoom(self, event: Event, image_data: Image, zoom_canvas: Canvas, data: SystemData):
         """
-        Displays a zoomed-in section of the image near the selected pixel.
+        Displays a zoomed-in section of the image near the selected pixel location.
 
         Args:
-            event (Event): The event object containing the mouse click position.
-            image_data (Image): The image object being zoomed in.
+            event (Event): Event object containing the coordinates of the mouse click.
+            image_data (Image): The image being analyzed.
             zoom_canvas (Canvas): The canvas displaying the zoomed-in image.
-            data (SystemData): The data structure holding system and switch data.
+            data (SystemData): Instance holding system and switch data.
         """
         x, y = event.x, event.y
         
@@ -206,13 +205,13 @@ class FrameSwitchColor(Frame):
 
     def get_pixel_color(self, event: Event, image_data: Image, multiplier: float, data: SystemData):
         """
-        Captures the RGB value of the pixel the user clicked and updates the switch data if it's a new color.
+        Retrieves the RGB color of a selected pixel and updates switch data if it's unique.
 
         Args:
-            event (Event): The event object containing the mouse click position.
-            image_data (Image): The image from which the pixel color is selected.
-            multiplier (float): Scaling factor for zooming purposes.
-            data (SystemData): The data structure holding switch data and image information.
+            event (Event): Event object with the click position.
+            image_data (Image): The image being analyzed.
+            multiplier (float): Scaling factor for zoom display.
+            data (SystemData): Instance holding switch data and image information.
         """
         x, y = int(event.x / multiplier), int(event.y / multiplier)
         rgb_pixel = image_data.getpixel((x, y))

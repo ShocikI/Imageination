@@ -7,6 +7,13 @@ from os import chdir
 from source.data.SystemData import SystemData
 
 def change_weight_of_elements(spinbox: Spinbox, data: SystemData) -> None:
+    """
+    Updates the weight of selected image files based on the user input from the Spinbox.
+
+    Args:
+        spinbox (Spinbox): The widget from which to retrieve the new weight value.
+        data (SystemData): The data structure containing the mean data for image manipulation.
+    """
     try:
         new_weight = int(spinbox.get())
     except:
@@ -32,7 +39,12 @@ def change_weight_of_elements(spinbox: Spinbox, data: SystemData) -> None:
 
 
 def generate_mean_file(data: SystemData) -> None:
-    # Check if in memory are more then 1 file
+    """
+    Generates a mean image file based on selected images and their respective weights. Saves the result as a new image.
+
+    Args:
+        data (SystemData): The data structure containing mean data and file paths for image averaging.
+    """
     shape = validate_data_for_generate(data)
     if not shape:
         return None
@@ -69,6 +81,15 @@ def generate_mean_file(data: SystemData) -> None:
 
 
 def validate_data_for_generate(data: SystemData) -> tuple | None:
+    """
+    Validates the data to ensure that at least two images are selected and that they share the same resolution.
+
+    Args:
+        data (SystemData): The data structure containing mean data and image details for validation.
+
+    Returns:
+        tuple | None: The resolution of the images as (height, width, channels) if validation succeeds, else None.
+    """
     # Check if in memory are more then 1 file
     if len(data.mean_data) < 2:
         messagebox.showinfo(message='Select at least 2 images in "File selection"')

@@ -5,12 +5,43 @@ from source.ops import FrameMeanImageOperator as ops
 from source.data.SystemData import SystemData
 
 class FrameMeanImage(Frame):
+    """
+    A Tkinter Frame widget that creates a user interface for managing and processing images
+    with weighted mean operations.
 
+    Attributes:
+        image_weight (IntVar): A Tkinter variable that stores the weight for the image.
+        spin_weight (Spinbox): A Spinbox widget to input image weight.
+        button_change_weight (Button): A Button widget to change the weight of the image.
+        button_remove_image (Button): A Button widget to remove the selected image.
+        separator (Separator): A Separator widget for visual layout.
+        button_generate (Button): A Button widget to generate the mean image file.
+    """
     def __init__ (self, parent: Notebook, data: SystemData) -> None:
+        """
+        Initializes the FrameMeanImage widget.
+
+        Args:
+            parent (Notebook): The parent widget, which should be a Tkinter Notebook.
+            data (SystemData): An instance of SystemData containing data and methods
+                               necessary for image operations.
+        """
         Frame.__init__(self, parent)
         self.create(data)
     
     def create(self, data: SystemData) -> None:
+        """
+        Creates the user interface for the FrameMeanImage and configures the grid layout.
+
+        This method sets up the layout, widgets, and their configurations for managing
+        images in a Tkinter application. It initializes a Treeview to display image data,
+        a Spinbox for setting image weight, and several Buttons for changing weights, 
+        removing images, and generating a mean image file.
+
+        Args:
+            data (SystemData): The data structure containing necessary information and 
+                               methods for processing the images.
+        """
         self['padding'] = (10, 5)
 
         self.image_weight = IntVar(self, value=1)

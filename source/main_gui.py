@@ -19,7 +19,6 @@ class GUI:
     def __init__(self):
         """
         Initialize the graphical user interface of the application.
-        
         """
         root = Tk()
         self.data = SystemData()
