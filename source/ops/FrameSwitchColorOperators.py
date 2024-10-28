@@ -5,10 +5,13 @@ from itertools import product
 import os
 from math import sqrt
 
+from data import SwitchData, SystemData
+
+
 MIN_COLOR_VALUE = 0
 MAX_COLOR_VALUE = 255
 
-def select_target_color(item) -> None:
+def select_target_color(item: SwitchData) -> None:
     """
     Opens a color chooser dialog to select a color and adds the selected color
     to the given item's color list and updates the color switches.
@@ -21,7 +24,7 @@ def select_target_color(item) -> None:
         item.color_list.append(color[0])
         item.box_switches.insert(len(item.color_list)+1, color[1])
 
-def remove_selected_color(data) -> None:
+def remove_selected_color(data: SwitchData) -> None:
     """
     Removes the selected color from the box_switches list in the given data object.
 
@@ -32,7 +35,7 @@ def remove_selected_color(data) -> None:
     if index:
         data.box_switches.delete(index)
 
-def remove_frame(frame, data) -> None:
+def remove_frame(frame: SwitchData, data: SystemData) -> None:
     """
     Removes the specified frame from the GUI grid and removes the frame's data from switch_data.
 
@@ -43,7 +46,7 @@ def remove_frame(frame, data) -> None:
     frame.grid_remove()
     data.switch_data.remove(frame)
 
-def generate_images(data) -> None:
+def generate_images(data: SystemData) -> None:
     """
     Generates new image files by applying color transformations to the selected image based on the user's color switching preferences. 
     This involves creating multiple combinations of color changes and saving each variation as a new image file. 
@@ -110,7 +113,7 @@ def generate_images(data) -> None:
 
     print("Finished!")
 
-def validate_data(data) -> bool:
+def validate_data(data: SystemData) -> bool:
     """
     Validates the data by checking if an image is selected and if color switches are present.
 
@@ -132,7 +135,7 @@ def validate_data(data) -> bool:
 
     return False
 
-def make_look_up_table(matrix: np.array, data) -> dict:
+def make_look_up_table(matrix: np.array, data: list[SwitchData]) -> dict:
     """
     Creates a lookup table mapping hex color values to pixel coordinates in the image matrix.
     Supports exact color matching and tolerance-based matching (cubic or spherical) for approximate color matches.
