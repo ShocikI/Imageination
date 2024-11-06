@@ -5,7 +5,7 @@ from itertools import product
 import os
 from math import sqrt
 
-from data import SwitchData, SystemData
+from source.data import SwitchData, SystemData
 
 
 MIN_COLOR_VALUE = 0

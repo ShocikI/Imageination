@@ -35,6 +35,8 @@ class SystemData():
         self.mean_tree = None
         self.mean_data = {}
 
+
+    # FrameSelectFile methods
     def select_files(self) -> None:
         """
         Opens a file dialog for the user to select image files (.png, .jpg, .jpeg).
@@ -48,6 +50,7 @@ class SystemData():
         for f in file_list:
             if f.endswith(".png") or f.endswith(".jpg") or f.endswith(".jpeg"):
                 self.file_names.append(f)
+        print(self.file_list)
 
         if len(self.file_names) > 0:
             for file in self.file_names:
@@ -87,7 +90,6 @@ class SystemData():
                         "width": image.width,
                         "mode": image.mode
                     }
-                    # self.mean_data[file] = (1, image.height, image.width, image.mode)
             self.update_files_data()
 
 
@@ -148,4 +150,4 @@ class SystemData():
             for data in self.mean_data.keys():
                 item = self.mean_data[data]
                 self.mean_tree.insert("", 'end', values=(data, item['weight'], item['height'], item['width'], item['mode']))
-    
+        
