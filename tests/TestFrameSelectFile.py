@@ -10,22 +10,22 @@ from PIL import Image
 from source.data.SystemData import SystemData
 
 class TestFrameSelectFile(TestCase):
-    data: SystemData
+    mock_data: SystemData
     
     @classmethod
     def setup_class(cls):
-        cls.data = SystemData()
+        cls.mock_data = SystemData()
         # Mock file_list as Combobox
-        cls.data.file_list = MagicMock()
-        cls.data.file_list.configure_mock(**{'values': []})
+        cls.mock_data.file_list = MagicMock()
+        cls.mock_data.file_list.configure_mock(**{'values': []})
         # Mock mean_tree as Treeview
-        cls.data.mean_tree = MagicMock()
-        cls.data.mean_tree.get_children.return_value = []
-        cls.data.mean_tree.insert = MagicMock()
+        cls.mock_data.mean_tree = MagicMock()
+        cls.mock_data.mean_tree.get_children.return_value = []
+        cls.mock_data.mean_tree.insert = MagicMock()
     
     @classmethod
     def teardown_class(cls):
-        del cls.data
+        del cls.mock_ata
 
     @patch('PIL.Image.open')
     @patch('tkinter.filedialog.askopenfilenames')
@@ -36,19 +36,19 @@ class TestFrameSelectFile(TestCase):
         mock_images.return_value = Image.new('RGB', (684, 741), color=(255, 255, 255))
 
         # Call function
-        self.data.select_files()
+        self.mock_data.select_files()
 
         # Check file_names
-        self.assertEqual(2, len(self.data.file_names))
-        self.assertEqual(list(return_path), self.data.file_names)
+        self.assertEqual(2, len(self.mock_data.file_names))
+        self.assertEqual(list(return_path), self.mock_data.file_names)
         # Check mean_data
-        self.assertIn('path/to/first.png', self.data.mean_data)
-        self.assertIn('path/to/second.png', self.data.mean_data)
-        self.assertEqual(self.data.mean_data['path/to/first.png'], { "weight": 1, "height": 741, "width": 684, "mode": 'RGB' })
+        self.assertIn('path/to/first.png', self.mock_data.mean_data)
+        self.assertIn('path/to/second.png', self.mock_data.mean_data)
+        self.assertEqual(self.mock_data.mean_data['path/to/first.png'], { "weight": 1, "height": 741, "width": 684, "mode": 'RGB' })
 
         # Reset values
-        self.data.file_names = []
-        self.data.file_list.configure_mock(**{'values': []})
+        self.mock_data.file_names = []
+        self.mock_data.file_list.configure_mock(**{'values': []})
 
     @patch('tkinter.filedialog.askopenfilenames')
     def test_select_files_empty_path(self, mock_filedialog):
@@ -56,10 +56,10 @@ class TestFrameSelectFile(TestCase):
         mock_filedialog.return_value = ''
 
         # Call function
-        self.data.select_files()
+        self.mock_data.select_files()
         # Check file_names
-        self.assertEqual(0, len(self.data.file_names))
-        self.assertEqual([], self.data.file_names)
+        self.assertEqual(0, len(self.mock_data.file_names))
+        self.assertEqual([], self.mock_data.file_names)
 
     @patch('PIL.Image.open')
     @patch('os.listdir')
@@ -74,17 +74,17 @@ class TestFrameSelectFile(TestCase):
         mock_images.return_value = Image.new('RGB', (684, 741), color=(255, 255, 255))
 
         # Call function
-        self.data.select_folder()
+        self.mock_data.select_folder()
         # Imitate result paths
         result = [os.path.join( folder_path, path) for path in ['first.png', 'second.png']]
         # Check file_names 
         # 2 files added now and 2 earlier
-        self.assertEqual(2, len(self.data.file_names))
-        self.assertEqual(result, self.data.file_names)
+        self.assertEqual(2, len(self.mock_data.file_names))
+        self.assertEqual(result, self.mock_data.file_names)
         
         # Reset values
-        self.data.file_names = []
-        self.data.file_list.configure_mock(**{'values': []})
+        self.mock_data.file_names = []
+        self.mock_data.file_list.configure_mock(**{'values': []})
 
     @patch('os.chdir')
     @patch('tkinter.filedialog.askdirectory')
@@ -95,138 +95,138 @@ class TestFrameSelectFile(TestCase):
         mock_chdir.return_value = None
         
         # Call function
-        self.data.select_folder()
+        self.mock_data.select_folder()
         # Check file_names 
 
         # 2 files added now and 2 earlier
-        self.assertEqual(0, len(self.data.file_names))
-        self.assertEqual([], self.data.file_names)
+        self.assertEqual(0, len(self.mock_data.file_names))
+        self.assertEqual([], self.mock_data.file_names)
 
     def test_remove_file(self):
         # Init values
-        self.data.file_names = ['path/to/first.png', 'path/to/second.png']
-        for file in self.data.file_names:
-            self.data.mean_data[file] = { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" }
+        self.mock_data.file_names = ['path/to/first.png', 'path/to/second.png']
+        for file in self.mock_data.file_names:
+            self.mock_data.mean_data[file] = { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" }
         # Check if values are ready
-        self.assertEqual(2, len(self.data.file_names))
-        self.assertIn('path/to/first.png', self.data.mean_data)
-        self.assertEqual(self.data.mean_data['path/to/first.png'], { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" })
-        self.assertIn('path/to/second.png', self.data.mean_data)
-        self.assertEqual(self.data.mean_data['path/to/first.png'], { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" })
+        self.assertEqual(2, len(self.mock_data.file_names))
+        self.assertIn('path/to/first.png', self.mock_data.mean_data)
+        self.assertEqual(self.mock_data.mean_data['path/to/first.png'], { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" })
+        self.assertIn('path/to/second.png', self.mock_data.mean_data)
+        self.assertEqual(self.mock_data.mean_data['path/to/first.png'], { "weight": 1,  "height": 500, "width": 500, "mode": "RGB" })
         # Remove one by one elements
-        for i in reversed(range(len(self.data.file_names))):
-            self.data.remove_file(self.data.file_names[i])
-            self.assertEqual(i, len(self.data.file_names))
+        for i in reversed(range(len(self.mock_data.file_names))):
+            self.mock_data.remove_file(self.mock_data.file_names[i])
+            self.assertEqual(i, len(self.mock_data.file_names))
         # Final check
-        self.assertEqual(0, len(self.data.file_names))
-        self.assertEqual([], self.data.file_names)
-        self.assertNotIn('path/to/first.png', self.data.mean_data)
-        self.assertNotIn('path/to/second.png', self.data.mean_data)
+        self.assertEqual(0, len(self.mock_data.file_names))
+        self.assertEqual([], self.mock_data.file_names)
+        self.assertNotIn('path/to/first.png', self.mock_data.mean_data)
+        self.assertNotIn('path/to/second.png', self.mock_data.mean_data)
         
         # Reset values
-        self.data.file_names = []
-        self.data.file_list.configure_mock(**{'values': []})
+        self.mock_data.file_names = []
+        self.mock_data.file_list.configure_mock(**{'values': []})
 
     def test_remove_selected_in_select_file_combobox(self):
         # Set file_list.get()
-        self.data.file_list.get.return_value = 'path/to/first.png'
+        self.mock_data.file_list.get.return_value = 'path/to/first.png'
         
         # Init values
-        self.data.file_names = ['path/to/first.png', 'path/to/second.png']
-        self.data.mean_data = {
+        self.mock_data.file_names = ['path/to/first.png', 'path/to/second.png']
+        self.mock_data.mean_data = {
             'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},
             'path/to/second.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'}
         }
         
         # Call function
-        self.data.remove_selected_in_select_file_combobox()
+        self.mock_data.remove_selected_in_select_file_combobox()
         
         # Check file_names and mean_data
-        self.assertNotIn('path/to/first.png', self.data.file_names)
-        self.assertNotIn('path/to/first.png', self.data.mean_data)
+        self.assertNotIn('path/to/first.png', self.mock_data.file_names)
+        self.assertNotIn('path/to/first.png', self.mock_data.mean_data)
         
         # Reset values
-        self.data.file_names = []
-        self.data.file_list.configure_mock(**{'values': []})
+        self.mock_data.file_names = []
+        self.mock_data.file_list.configure_mock(**{'values': []})
 
     def test_remove_selected_in_mean_image_tree(self):
         # Set mean_tree.selection()
-        self.data.mean_tree.selection.return_value = ['item1', 'item2']
+        self.mock_data.mean_tree.selection.return_value = ['item1', 'item2']
         # Set mean_tree.item()
-        self.data.mean_tree.item.side_effect = lambda item: {'values': ['path/to/first.png'] if item == 'item1' else ['path/to/second.png']}
+        self.mock_data.mean_tree.item.side_effect = lambda item: {'values': ['path/to/first.png'] if item == 'item1' else ['path/to/second.png']}
         
         # Dodanie przykładowych danych do file_names i mean_data
-        self.data.file_names = ['path/to/first.png', 'path/to/second.png']
-        self.data.mean_data = {
+        self.mock_data.file_names = ['path/to/first.png', 'path/to/second.png']
+        self.mock_data.mean_data = {
             'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},
             'path/to/second.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'}
         }
         
         # Wywołanie funkcji
-        self.data.remove_selected_in_mean_image_tree()
+        self.mock_data.remove_selected_in_mean_image_tree()
         
         # Sprawdzenie, czy pliki zostały usunięte
-        self.assertNotIn('path/to/first.png', self.data.file_names)
-        self.assertNotIn('path/to/second.png', self.data.file_names)
-        self.assertNotIn('path/to/first.png', self.data.mean_data)
-        self.assertNotIn('path/to/second.png', self.data.mean_data)
+        self.assertNotIn('path/to/first.png', self.mock_data.file_names)
+        self.assertNotIn('path/to/second.png', self.mock_data.file_names)
+        self.assertNotIn('path/to/first.png', self.mock_data.mean_data)
+        self.assertNotIn('path/to/second.png', self.mock_data.mean_data)
         
         # Reset values
-        self.data.file_names = []
-        self.data.file_list.configure_mock(**{'values': []})
+        self.mock_data.file_names = []
+        self.mock_data.file_list.configure_mock(**{'values': []})
 
     def test_clear_selection(self):
         # Init values
-        self.data.file_names = ['path/to/first.png', 'path/to/second.png']
-        self.data.mean_data = {
+        self.mock_data.file_names = ['path/to/first.png', 'path/to/second.png']
+        self.mock_data.mean_data = {
             'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},
             'path/to/second.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'}
         }
         
         # Call function
-        self.data.clear_selection()
+        self.mock_data.clear_selection()
         
         # Final check
-        self.assertEqual(self.data.file_names, [])
-        self.assertEqual(self.data.mean_data, {})
+        self.assertEqual(self.mock_data.file_names, [])
+        self.assertEqual(self.mock_data.mean_data, {})
 
     
     def test_update_files_data_empty(self):
         # Init values
-        self.data.file_names = []
-        self.data.mean_data = {}
+        self.mock_data.file_names = []
+        self.mock_data.mean_data = {}
         
         # Mock get_children
-        self.data.mean_tree.get_children.return_value = []
+        self.mock_data.mean_tree.get_children.return_value = []
         
         # Call function
-        self.data.update_files_data()
+        self.mock_data.update_files_data()
         
-        self.data.file_list.set.assert_called_with("")
+        self.mock_data.file_list.set.assert_called_with("")
         
         # Final check
-        self.data.mean_tree.delete.assert_not_called()
+        self.mock_data.mean_tree.delete.assert_not_called()
 
     def test_update_files_data_with_data(self):
         # Init values
-        self.data.file_names = ['path/to/first.png', 'path/to/second.png']
-        self.data.mean_data = {
+        self.mock_data.file_names = ['path/to/first.png', 'path/to/second.png']
+        self.mock_data.mean_data = {
             'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},
             'path/to/second.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'}
         }
         # Mock get_children
-        self.data.mean_tree.get_children.return_value = {'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},}
+        self.mock_data.mean_tree.get_children.return_value = {'path/to/first.png': {'weight': 1, 'height': 600, 'width': 800, 'mode': 'RGB'},}
 
         # Call function
-        self.data.update_files_data()
+        self.mock_data.update_files_data()
         
         # Check if values are updated
-        self.data.file_list.__setitem__.assert_called_with('values', self.data.file_names)
-        self.data.file_list.set.assert_called_with("")
+        self.mock_data.file_list.__setitem__.assert_called_with('values', self.mock_data.file_names)
+        self.mock_data.file_list.set.assert_called_with("")
         
         # Check if mean_tree is cleared
-        self.data.mean_tree.delete.assert_called()
+        self.mock_data.mean_tree.delete.assert_called()
         
         # Check if mean_tree are updated
-        self.data.mean_tree.insert.assert_any_call("", 'end', values=('path/to/first.png', 1, 600, 800, 'RGB'))
-        self.data.mean_tree.insert.assert_any_call("", 'end', values=('path/to/second.png', 1, 600, 800, 'RGB'))
+        self.mock_data.mean_tree.insert.assert_any_call("", 'end', values=('path/to/first.png', 1, 600, 800, 'RGB'))
+        self.mock_data.mean_tree.insert.assert_any_call("", 'end', values=('path/to/second.png', 1, 600, 800, 'RGB'))

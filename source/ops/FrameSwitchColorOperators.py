@@ -26,50 +26,40 @@ def select_target_color(item: SwitchData) -> None:
 
 def remove_selected_color(data: SwitchData) -> None:
     """
-    Removes the selected color from the box_switches list in the given data object.
+    Removes the selected color from the box_switches list in the provided SwitchData object.
 
     Args:
-        data (SwitchData): An object containing the list of box switches where the selected color is stored.
+        data (SwitchData): A SwitchData object containing the list of selected colors 
+                           and box switches for color management.
     """
     index = data.box_switches.curselection()
     if index:
         data.box_switches.delete(index)
 
-def remove_frame(frame: SwitchData, data: SystemData) -> None:
-    """
-    Removes the specified frame from the GUI grid and removes the frame's data from switch_data.
-
-    Args:
-        frame (SwitchData): The frame to be removed from the grid.
-        data (SystemData): An object that contains switch_data, which stores information about the frames.
-    """
-    frame.grid_remove()
-    data.switch_data.remove(frame)
-
 def generate_images(data: SystemData) -> None:
     """
-    Generates new image files by applying color transformations to the selected image based on the user's color switching preferences. 
-    This involves creating multiple combinations of color changes and saving each variation as a new image file. 
-    Once the images are generated, the program resets the user's color selections and file data.
+    Generates and saves new image files by applying color transformations based on user color 
+    preferences for selected images. Creates multiple image versions based on combinations 
+    of user-defined color switches.
 
     Args:
-        data (SystemData): An object containing:
-            - file_names (list[str]): A list of file names representing the images to be processed.
-            - switch_data (list[SwitchData]): A list of SwitchData objects, each representing the user's 
-              selected color switches and transformations.
+        data (SystemData): A SystemData object containing:
+            - file_names (list[str]): A list of image file paths to process.
+            - switch_data (list[SwitchData]): List of SwitchData objects containing 
+              user-defined color transformations.
 
     Workflow:
-        1. The function first removes any SwitchData entries where no target colors are selected.
-        2. Validates if the `switch_data` is appropriate for further processing.
-        3. Prompts the user to select a target directory to save the generated images.
-        4. For each image, the function applies color transformations based on the switch data:
-            - Uses a lookup table to map original colors to new target colors.
-            - If multiple colors are selected for switching, generates all possible combinations of transformations.
-        5. Saves each generated image file in the target directory with unique color combinations.
-        6. After generating the images, the program is reset by removing the color switching frames and clearing the file data.
+        1. Removes any empty SwitchData entries with no colors selected.
+        2. Validates if `switch_data` has required color transformation info.
+        3. Asks the user to select a directory to save generated images.
+        4. Applies color transformations to each selected image:
+            - Uses a lookup table to map original colors to user-selected colors.
+            - Generates all possible combinations of transformations if multiple colors are selected.
+        5. Saves each new image in the target directory.
+        6. Resets color selections and clears file data after generation.
 
     Returns:
-        None: The function performs its operations but does not return any value.
+        None: This function performs operations but returns no value.
     """
     # Clear empty colors
     for item in reversed(data.switch_data):
@@ -106,7 +96,7 @@ def generate_images(data: SystemData) -> None:
 
     # Reset program
     for frame in data.switch_data:
-        remove_frame(frame, data)
+        data.remove_frame(frame)
 
     data.file_names = []
     data.mean_data = {}
@@ -153,10 +143,10 @@ def make_look_up_table(matrix: np.array, data: list[SwitchData]) -> dict:
         table[item.hex_color] = []
     # Check tolerance usage
     for item in data:
+        keep_diff = item.keep_difference
         if item.use_tolerance:
             tolerance_type = item.box_tolerance.get()
             tol_value = item.tolerance_value.get()
-            keep_diff = item.keep_difference
 
             if tolerance_type == 'Cubic' and tol_value > 0:
                 for row in range(len(matrix)):
@@ -187,19 +177,19 @@ def make_look_up_table(matrix: np.array, data: list[SwitchData]) -> dict:
                 for column in range(len(matrix[row])):
                     if list(item.rgb_color) == list(matrix[row][column]):
                         table[item.hex_color].append((row, column, keep_diff, 0, 0, 0))
-
+    
     return table
 
 def generate_file(matrix: np.array, table: dict, combination: list[tuple], index: int):
     """
-    Generates a new image by applying the color transformations based on the given combination 
-    and saves the new image file.
+    Applies color transformations from a combination list to a given image matrix 
+    and saves the modified image as a new file.
 
     Args:
-        matrix (np.array): A 2D array representing the pixel data of the image.
+        matrix (np.array): Array representing the image's pixel data.
         table (dict): A lookup table mapping color hex values to pixel coordinates.
-        combination (list[tuple]): A list of color transformations (RGB and target color).
-        index (int): The index used to name the generated image file.
+        combination (list[tuple]): List of color transformations (RGB values and target colors).
+        index (int): Index used to uniquely name each generated image file.
     """
     for rgb, target in combination:
         for row, column, keep_diff, r, g, b in table[target]:

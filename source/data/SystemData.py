@@ -27,7 +27,7 @@ class SystemData():
     def __init__(self):
         """
         Initializes an empty SystemData object with no selected files, no color switch data,
-        and no assigned Combobox widget.
+        and no assigned Combobox or Treeview widget.
         """
         self.file_names = []
         self.switch_data = []
@@ -35,12 +35,11 @@ class SystemData():
         self.mean_tree = None
         self.mean_data = {}
 
-
     # FrameSelectFile methods
     def select_files(self) -> None:
         """
         Opens a file dialog for the user to select image files (.png, .jpg, .jpeg).
-        The selected files are added to the file_names list in the provided SystemData object.
+        Adds the selected files to the file_names list and updates mean_data with file metadata.
         """
         file = filedialog.askopenfilenames()
         if file == "":
@@ -62,14 +61,12 @@ class SystemData():
                         "width": image.width,
                         "mode": image.mode
                     }
-                    # self.mean_data[file] = (1, image.height, image.width, image.mode)
             self.update_files_data()
-
 
     def select_folder(self) -> None:
         """
         Opens a directory dialog for the user to select a folder containing image files (.png, .jpg, .jpeg).
-        All image files in the folder are added to the file_names list in the provided SystemData object.
+        Adds all image files in the folder to the file_names list and updates mean_data with file metadata.
         """
         folder_name = filedialog.askdirectory().replace("/", "\\")
         if folder_name == "":
@@ -92,14 +89,18 @@ class SystemData():
                     }
             self.update_files_data()
 
-
     def remove_selected_in_select_file_combobox(self) -> None:
+        """
+        Removes the currently selected file in the file_list Combobox from the file_names list.
+        """
         name = self.file_list.get()
         if name != '':        
             self.remove_file(name)
 
-
     def remove_selected_in_mean_image_tree(self) -> None:
+        """
+        Removes the files currently selected in the mean_tree Treeview from the file_names list.
+        """
         selected_files = [
             self.mean_tree.item(item)['values'][0] 
             for item in self.mean_tree.selection()
@@ -109,11 +110,13 @@ class SystemData():
             for file in selected_files:
                 self.remove_file(file)
 
-
     def remove_file(self, file_name: str) -> None:
         """
-        Removes the selected file from the file_names list in the provided SystemData object
-        and updates the Tkinter widget displaying the list of files.
+        Removes the specified file from the file_names list and updates the mean_data dictionary 
+        to remove associated metadata. Refreshes the Tkinter widgets displaying file data.
+
+        Args:
+            file_name (str): The file path to be removed from the file_names list.
         """
         index = self.file_names.index(file_name)
         self.file_names.pop(index)
@@ -123,21 +126,23 @@ class SystemData():
                 self.mean_data.pop(key)
                 break
 
-        self.update_files_data()
-            
+        self.update_files_data()     
 
     def clear_selection(self) -> None:
         """
-        Clears the list of selected files in the provided SystemData object and updates
-        the Tkinter widget to reflect the empty list.
+        Clears the list of selected files and the mean_data dictionary, 
+        and updates the Tkinter widgets to reflect the empty list.
         """
         self.file_names = []
         self.mean_data = {}
         self.update_files_data()
         print("List has been cleared.")
 
-
     def update_files_data(self):
+        """
+        Updates the file_list Combobox and mean_tree Treeview with current data 
+        from file_names and mean_data, respectively. Clears and redraws the treeview items.
+        """
         self.file_list['values'] = self.file_names
         self.file_list.set("")
 
@@ -151,3 +156,12 @@ class SystemData():
                 item = self.mean_data[data]
                 self.mean_tree.insert("", 'end', values=(data, item['weight'], item['height'], item['width'], item['mode']))
         
+    def remove_switch_data(self, frame: SwitchData):
+        """
+        Removes the specified SwitchData frame from the switch_data list and from the GUI display.
+
+        Args:
+            frame (SwitchData): The SwitchData frame to be removed.
+        """
+        frame.grid_remove()
+        self.switch_data.remove(frame)

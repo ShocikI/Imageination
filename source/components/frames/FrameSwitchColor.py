@@ -139,7 +139,7 @@ class FrameSwitchColor(Frame):
             return None
         image_data = Image.open(data.file_names[0])
         color_mode = image_data.mode
-        if color_mode is 'RGB':
+        if color_mode is not 'RGB':
             messagebox.showinfo(message='This operation is possible only for RGB images.')
             return None
 
@@ -226,5 +226,5 @@ class FrameSwitchColor(Frame):
         self.pop_up.destroy()
 
         if is_new:
-            data.switch_data.append(SwitchData(self.scr_frame, data, rgb_pixel))
+            data.switch_data.append(SwitchData(self.scr_frame, data.remove_switch_data, rgb_pixel))
             self.update_grid(data)
